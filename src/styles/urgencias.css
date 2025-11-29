@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-  max-width: 900px;
+  /* max-width: 900px; */
   margin: auto;
   padding: 40px 20px;
 }
@@ -45,11 +45,15 @@ body {
   border-color: #6f8dff;
 }
 
+:root {
+  --card-bg: rgba(255, 255, 255, 0.04);
+}
+
 /* ---- Card glassmorphism ---- */
 .card-modern {
   padding: 25px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.04);
+  background-color: var(--card-bg);
   border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(10px);
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
@@ -62,7 +66,13 @@ body {
   gap: 15px;
 }
 
-input, select {
+fieldset {
+  border: 1px solid #444;
+  border-radius: 12px;
+  padding: 15px 20px;
+}
+
+input, select, textarea {
   background: #1f1f1f;
   border: 1px solid #444;
   padding: 12px;
@@ -97,6 +107,11 @@ input:focus, select:focus {
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
 
 /* ---- Tabla ---- */
 .table-modern {
@@ -120,4 +135,49 @@ input:focus, select:focus {
   text-align: center;
   padding: 20px;
   opacity: 0.7;
+}
+
+.shorten-text {
+  text-align: justify;
+  max-width: 34rem;
+  max-height: 8rem;
+  /* white-space: ; */
+  overflow: hidden;
+
+  overflow-y: scroll;
+}
+
+/* ---- Modal de éxito ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.modal {
+  background: #0f1724;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 20px;
+  border-radius: 12px;
+  width: min(420px, 90%);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.modal-header h3 {
+  margin: 0 0 8px 0;
+  color: #bff0c6;
+}
+
+.modal-body p {
+  margin: 0 0 12px 0;
+  color: #e6f7ea;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
 }
