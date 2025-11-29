@@ -10,7 +10,7 @@ export interface CrearIngresoDTO {
         }
     },
     enfermera: {
-        cuit: string;
+        uuid: string;
     },
     informe: string;
     nivel: string;

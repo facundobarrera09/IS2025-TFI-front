@@ -36,6 +36,7 @@ function App() {
       const response = await urgenciasService.getIngresos()
 
       if (response.success) {
+        console.log(response.result.listaDeIngresos)
         setIngresos(response.result.listaDeIngresos)
       }
       else {

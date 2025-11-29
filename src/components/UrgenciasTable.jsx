@@ -30,7 +30,7 @@ export default function UrgenciasTable({ data }) {
                 {ingreso.informe}
               </div>
             </td>
-            <td>{ingreso.nivelEmergencia.nombre}</td>
+            <td>{ingreso.nivelEmergencia}</td>
             <td>{ingreso.temperatura}</td>
             <td>{ingreso.frecuenciaCardiaca}</td>
             <td>{ingreso.frecuenciaRespiratoria}</td>
