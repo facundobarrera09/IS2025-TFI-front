@@ -1,84 +1,122 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
-import UrgenciasForm from "./components/UrgenciasForm";
-import UrgenciasTable from "./components/UrgenciasTable";
-import SuccessModal from "./components/SuccessModal";
-import { urgenciasService } from "./backend/connections/urgenciasService";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import AuthPage from "./pages/AuthPage";
+import UrgenciasPage from "./pages/UrgenciasPage";
+import PacientesPage from "./pages/PacientesPage";
+import ReclamoPage from "./pages/ReclamoPage";
+import UserHeader from "./components/UserHeader";
 
-function App() {
-  const [tab, setTab] = useState("form");
-  const [ingresos, setIngresos] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
+function AppContent() {
+  const { usuario, estaAutenticado, cargando } = useAuth();
+  const [modulo, setModulo] = useState(null);
 
-  const agregarIngresos = async (data) => {
-    const response = await urgenciasService.crearIngreso(data)
-
-    if (!response.success) {
-      console.log('No se pudo crear el ingreso:', response.error.context)
-      return false
+  // Establecer módulo inicial según el rol
+  useEffect(() => {
+    if (usuario && !modulo) {
+      if (usuario.autoridad === 'MEDICO') {
+        setModulo("reclamo");
+      } else if (usuario.autoridad === 'ENFERMERA') {
+        setModulo("pacientes");
+      }
     }
+  }, [usuario, modulo]);
 
-    // Mostrar modal de éxito
-    setModalMessage("Ingreso creado correctamente");
-    setModalVisible(true);
-
-    // Actualizar lista
-    fetchIngresos();
-
-    // Auto cerrar después de 3 segundos
-    setTimeout(() => setModalVisible(false), 3000);
-
-    return true
+  // Verificar si el usuario tiene permiso para ver el módulo
+  const tienePermiso = (moduloNombre) => {
+    if (!usuario) return false;
+    
+    if (usuario.autoridad === 'MEDICO') {
+      return ['reclamo'].includes(moduloNombre);
+    }
+    
+    if (usuario.autoridad === 'ENFERMERA') {
+      return ['pacientes', 'urgencias'].includes(moduloNombre);
+    }
+    
+    return false;
   };
 
-  const fetchIngresos = async () => {
-      const response = await urgenciasService.getIngresos()
-
-      if (response.success) {
-        console.log(response.result.listaDeIngresos)
-        setIngresos(response.result.listaDeIngresos)
-      }
-      else {
-        setIngresos([])
-        console.log("Error al obtener los ingresos:", response.error);
-      }
+  if (cargando) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{ textAlign: 'center', color: '#fff' }}>
+          <div className="loading-spinner" style={{ 
+            width: '60px', 
+            height: '60px',
+            borderWidth: '6px',
+            margin: '0 auto 20px'
+          }}></div>
+          <p style={{ fontSize: '1.2rem' }}>Cargando...</p>
+        </div>
+      </div>
+    );
   }
 
-  useEffect(() => {
-    if (tab === "list") {
-      fetchIngresos();
-    }
-  }, [tab])
+  if (!estaAutenticado) {
+    return <AuthPage />;
+  }
 
   return (
-    <div className="container">
-      <h1 className="title">Módulo de Urgencias</h1>
+    <>
+      {/* ---- Header de usuario ---- */}
+      <UserHeader />
 
-      {/* ---- Tabs ---- */}
-      <div className="tabs">
-        <button
-          className={tab === "form" ? "tab active" : "tab"}
-          onClick={() => setTab("form")}
-        >
-          ➕ Ingreso
-        </button>
-
-        <button
-          className={tab === "list" ? "tab active" : "tab"}
-          onClick={() => setTab("list")}
-        >
-          📋 Lista de espera
-        </button>
+      {/* ---- Navegación principal ---- */}
+      <div style={{
+        background: 'rgba(0, 0, 0, 0.3)',
+        padding: '15px 0',
+        marginBottom: '20px',
+        backdropFilter: 'blur(10px)'
+      }}>
+        <div className="container">
+          <div className="tabs" style={{ marginBottom: 0 }}>
+            {tienePermiso('pacientes') && (
+              <button
+                className={modulo === "pacientes" ? "tab active" : "tab"}
+                onClick={() => setModulo("pacientes")}
+              >
+                👥 Pacientes
+              </button>
+            )}
+            {tienePermiso('urgencias') && (
+              <button
+                className={modulo === "urgencias" ? "tab active" : "tab"}
+                onClick={() => setModulo("urgencias")}
+              >
+                🏥 Urgencias
+              </button>
+            )}
+            {tienePermiso('reclamo') && (
+              <button
+                className={modulo === "reclamo" ? "tab active" : "tab"}
+                onClick={() => setModulo("reclamo")}
+              >
+                🩺 Reclamo
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* ---- Contenido ---- */}
-      <div className="card-modern">
-        {tab === "form" && <UrgenciasForm onSubmit={agregarIngresos} />}
-        {tab === "list" && <UrgenciasTable data={ingresos} />}
-        <SuccessModal visible={modalVisible} message={modalMessage} onClose={() => setModalVisible(false)} />
-      </div>
-    </div>
+      {/* ---- Contenido del módulo ---- */}
+      {modulo === "urgencias" && tienePermiso('urgencias') && <UrgenciasPage />}
+      {modulo === "pacientes" && tienePermiso('pacientes') && <PacientesPage />}
+      {modulo === "reclamo" && tienePermiso('reclamo') && <ReclamoPage />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
