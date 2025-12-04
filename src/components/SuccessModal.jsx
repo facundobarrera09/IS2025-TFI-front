@@ -3,9 +3,13 @@ export default function SuccessModal({ visible, message = "Acción exitosa", onC
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal success-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-icon">
+          ✅
+        </div>
+        
         <header className="modal-header">
-          <h3>Éxito</h3>
+          <h3>¡Éxito!</h3>
         </header>
 
         <div className="modal-body">
@@ -13,7 +17,9 @@ export default function SuccessModal({ visible, message = "Acción exitosa", onC
         </div>
 
         <footer className="modal-footer">
-          <button className="btn-modern" onClick={onClose}>Cerrar</button>
+          <button className="btn-modern btn-success" onClick={onClose}>
+            Entendido
+          </button>
         </footer>
       </div>
     </div>
