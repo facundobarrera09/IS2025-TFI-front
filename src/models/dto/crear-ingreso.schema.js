@@ -9,7 +9,7 @@ export const CrearIngreso = z.object({
         nombre: z.string().min(1, error).optional(),
         domicilio: z.object({
             calle: z.string(error).min(1, error),
-            numero: z.string(error).min(1, error),
+            numero: z.union([z.string().min(1, error), z.number().positive(error)]),
             localidad: z.string(error).min(1, error)
         }).optional()
     }),
@@ -18,9 +18,9 @@ export const CrearIngreso = z.object({
     }),
     informe: z.string().min(1, error),
     nivel: z.string().min(1, error),
-    temperatura: z.string().min(1, error).transform(v => Number(v)),
-    frecuenciaCardiaca: z.string().min(1, error).transform(v => Number(v)),
-    frecuenciaRespiratoria: z.string().min(1, error).transform(v => Number(v)),
+    temperatura: z.string().min(1, error).transform(v => Number(v)).refine(v => v > 0, "La temperatura debe ser mayor a 0"),
+    frecuenciaCardiaca: z.string().min(1, error).transform(v => Number(v)).refine(v => v > 0, "La frecuencia cardíaca debe ser mayor a 0"),
+    frecuenciaRespiratoria: z.string().min(1, error).transform(v => Number(v)).refine(v => v > 0, "La frecuencia respiratoria debe ser mayor a 0"),
     tensionArterial: z.string()
         .min(1, error)
         .regex(/\d+(?=\/)/, "La frecuencia sistólica debe ser un número postivo")

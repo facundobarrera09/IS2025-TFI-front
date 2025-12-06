@@ -17,8 +17,8 @@ export const USUARIOS_MOCK = [
     email: "enfermera@hospital.com",
     password: "password123", // En producción estaría hasheada
     autoridad: "ENFERMERA",
-    nombre: "María",
-    apellido: "González"
+    nombre: "Susana",
+    apellido: "Gimenez"
   }
 ];
 
@@ -26,9 +26,9 @@ export const USUARIOS_MOCK = [
 export const PACIENTES_MOCK = [
   {
     id: "pac-001",
-    cuit: "20-12345678-9",
-    nombre: "Carlos",
-    apellido: "Rodríguez",
+    cuit: "20-43772929-9",
+    nombre: "Mauro",
+    apellido: "Villagra",
     domicilio: {
       calle: "San Martín",
       numero: 1234,
@@ -36,27 +36,33 @@ export const PACIENTES_MOCK = [
     },
     afiliado: {
       obraSocial: {
-        nombre: "OSDE"
+        nombre: "Subsidio de salud"
       },
-      numeroAfiliado: "123456789"
+      numeroAfiliado: "20-43772929-9"
     }
   },
   {
     id: "pac-002",
-    cuit: "27-98765432-1",
-    nombre: "Ana",
-    apellido: "Martínez",
+    cuit: "26-12345678-0",
+    nombre: "Maria",
+    apellido: "Perez",
     domicilio: {
       calle: "Belgrano",
       numero: 567,
       localidad: "Yerba Buena"
+    },
+    afiliado: {
+      obraSocial: {
+        nombre: "Swiss medical"
+      },
+      numeroAfiliado: "26-12345678-0"
     }
   },
   {
     id: "pac-003",
-    cuit: "23-45678901-2",
-    nombre: "Roberto",
-    apellido: "Gómez",
+    cuit: "24-87654321-1",
+    nombre: "Marcos",
+    apellido: "Molina",
     domicilio: {
       calle: "Avenida Mate de Luna",
       numero: 2500,
@@ -64,16 +70,16 @@ export const PACIENTES_MOCK = [
     },
     afiliado: {
       obraSocial: {
-        nombre: "Swiss Medical"
+        nombre: "OSPE"
       },
-      numeroAfiliado: "987654321"
+      numeroAfiliado: "24-87654321-1"
     }
   },
   {
     id: "pac-004",
-    cuit: "20-11223344-5",
-    nombre: "Laura",
-    apellido: "Fernández",
+    cuit: "21-88544755-2",
+    nombre: "Camila",
+    apellido: "Rodriguez",
     domicilio: {
       calle: "25 de Mayo",
       numero: 890,
@@ -81,172 +87,136 @@ export const PACIENTES_MOCK = [
     },
     afiliado: {
       obraSocial: {
-        nombre: "Galeno"
+        nombre: "OSFATUN"
       },
-      numeroAfiliado: "456789123"
-    }
-  },
-  {
-    id: "pac-005",
-    cuit: "27-55667788-9",
-    nombre: "Sofía",
-    apellido: "López",
-    domicilio: {
-      calle: "Congreso",
-      numero: 345,
-      localidad: "San Miguel de Tucumán"
-    }
-  },
-  {
-    id: "pac-006",
-    cuit: "20-99887766-5",
-    nombre: "Miguel",
-    apellido: "Sánchez",
-    domicilio: {
-      calle: "Laprida",
-      numero: 678,
-      localidad: "Banda del Río Salí"
-    },
-    afiliado: {
-      obraSocial: {
-        nombre: "OSECAC"
-      },
-      numeroAfiliado: "789456123"
-    }
-  },
-  {
-    id: "pac-007",
-    cuit: "27-33445566-7",
-    nombre: "Valentina",
-    apellido: "Díaz",
-    domicilio: {
-      calle: "Junín",
-      numero: 1567,
-      localidad: "San Miguel de Tucumán"
-    },
-    afiliado: {
-      obraSocial: {
-        nombre: "OSPEDYC"
-      },
-      numeroAfiliado: "321654987"
-    }
-  },
-  {
-    id: "pac-008",
-    cuit: "20-77889900-1",
-    nombre: "Diego",
-    apellido: "Ramírez",
-    domicilio: {
-      calle: "Avenida Aconquija",
-      numero: 3456,
-      localidad: "Yerba Buena"
+      numeroAfiliado: "21-88544755-2"
     }
   }
 ];
 
 // Ingresos de ejemplo
 export const INGRESOS_MOCK = [
-  {
-    id: "ing-001",
-    paciente: PACIENTES_MOCK[0],
-    enfermera: {
-      uuid: "550e8400-e29b-41d4-a716-446655440002",
-      nombre: "María",
-      apellido: "González"
-    },
-    fechaIngreso: new Date("2024-12-03T10:30:00"),
-    informe: "Paciente presenta dolor abdominal agudo en cuadrante inferior derecho. Refiere náuseas y vómitos. Temperatura elevada.",
-    nivelEmergencia: "Urgencia",
-    temperatura: 38.5,
-    frecuenciaCardiaca: 95,
-    frecuenciaRespiratoria: 22,
-    tensionArterial: {
-      frecuenciaSistolica: 130,
-      frecuenciaDiastolica: 85
-    },
-    estado: "PENDIENTE"
-  },
-  {
-    id: "ing-002",
-    paciente: PACIENTES_MOCK[1],
-    enfermera: {
-      uuid: "550e8400-e29b-41d4-a716-446655440002",
-      nombre: "María",
-      apellido: "González"
-    },
-    fechaIngreso: new Date("2024-12-03T11:15:00"),
-    informe: "Paciente con fractura en antebrazo derecho tras caída. Dolor intenso, inflamación visible. Consciente y orientada.",
-    nivelEmergencia: "Emergencia",
-    temperatura: 36.8,
-    frecuenciaCardiaca: 88,
-    frecuenciaRespiratoria: 18,
-    tensionArterial: {
-      frecuenciaSistolica: 125,
-      frecuenciaDiastolica: 80
-    },
-    estado: "PENDIENTE"
-  },
-  {
-    id: "ing-003",
-    paciente: PACIENTES_MOCK[2],
-    enfermera: {
-      uuid: "550e8400-e29b-41d4-a716-446655440002",
-      nombre: "María",
-      apellido: "González"
-    },
-    fechaIngreso: new Date("2024-12-03T09:45:00"),
-    informe: "Paciente con dificultad respiratoria severa, cianosis periférica. Antecedentes de asma. Requiere atención inmediata.",
-    nivelEmergencia: "Critica",
-    temperatura: 37.2,
-    frecuenciaCardiaca: 110,
-    frecuenciaRespiratoria: 32,
-    tensionArterial: {
-      frecuenciaSistolica: 140,
-      frecuenciaDiastolica: 90
-    },
-    estado: "PENDIENTE"
-  },
-  {
-    id: "ing-004",
-    paciente: PACIENTES_MOCK[3],
-    enfermera: {
-      uuid: "550e8400-e29b-41d4-a716-446655440002",
-      nombre: "María",
-      apellido: "González"
-    },
-    fechaIngreso: new Date("2024-12-03T12:00:00"),
-    informe: "Paciente con cefalea intensa, fotofobia y rigidez de nuca. Sospecha de meningitis. Requiere evaluación neurológica urgente.",
-    nivelEmergencia: "Emergencia",
-    temperatura: 39.2,
-    frecuenciaCardiaca: 105,
-    frecuenciaRespiratoria: 24,
-    tensionArterial: {
-      frecuenciaSistolica: 135,
-      frecuenciaDiastolica: 88
-    },
-    estado: "PENDIENTE"
-  },
-  {
-    id: "ing-005",
-    paciente: PACIENTES_MOCK[4],
-    enfermera: {
-      uuid: "550e8400-e29b-41d4-a716-446655440002",
-      nombre: "María",
-      apellido: "González"
-    },
-    fechaIngreso: new Date("2024-12-03T13:20:00"),
-    informe: "Paciente con esguince de tobillo tras actividad deportiva. Dolor moderado, inflamación leve. Puede caminar con dificultad.",
-    nivelEmergencia: "Urgencia Menor",
-    temperatura: 36.5,
-    frecuenciaCardiaca: 75,
-    frecuenciaRespiratoria: 16,
-    tensionArterial: {
-      frecuenciaSistolica: 118,
-      frecuenciaDiastolica: 75
-    },
-    estado: "PENDIENTE"
-  }
-];
+  // {
+  //   id: "ing-001",
+  //   paciente: PACIENTES_MOCK[0],
+  //   enfermera: {
+  //     uuid: "550e8400-e29b-41d4-a716-446655440002",
+  //     nombre: "Susana",
+  //     apellido: "Gimenez"
+  //   },
+  //   fechaIngreso: new Date("2024-12-03T10:30:00"),
+  //   informe: "Paciente presenta dolor abdominal agudo en cuadrante inferior derecho. Refiere náuseas y vómitos. Temperatura elevada.",
+  //   nivelEmergencia: "Urgencia",
+  //   temperatura: 38.5,
+  //   frecuenciaCardiaca: 95,
+  //   frecuenciaRespiratoria: 22,
+  //   tensionArterial: {
+  //     frecuenciaSistolica: 130,
+  //     frecuenciaDiastolica: 85
+  //   },
+  //   estado: "PENDIENTE"
+  // },
+  // {
+  //   id: "ing-002",
+  //   paciente: PACIENTES_MOCK[1],
+  //   enfermera: {
+  //     uuid: "550e8400-e29b-41d4-a716-446655440002",
+  //     nombre: "Susana",
+  //     apellido: "Gimenez"
+  //   },
+  //   fechaIngreso: new Date("2024-12-03T11:15:00"),
+  //   informe: "Paciente con fractura en antebrazo derecho tras caída. Dolor intenso, inflamación visible. Consciente y orientada.",
+  //   nivelEmergencia: "Emergencia",
+  //   temperatura: 36.8,
+  //   frecuenciaCardiaca: 88,
+  //   frecuenciaRespiratoria: 18,
+  //   tensionArterial: {
+  //     frecuenciaSistolica: 125,
+  //     frecuenciaDiastolica: 80
+  //   },
+  //   estado: "PENDIENTE"
+  // },
+  // {
+  //   id: "ing-003",
+  //   paciente: PACIENTES_MOCK[2],
+  //   enfermera: {
+  //     uuid: "550e8400-e29b-41d4-a716-446655440002",
+  //     nombre: "Susana",
+  //     apellido: "Gimenez"
+  //   },
+  //   fechaIngreso: new Date("2024-12-03T09:45:00"),
+  //   informe: "Paciente con dificultad respiratoria severa, cianosis periférica. Antecedentes de asma. Requiere atención inmediata.",
+  //   nivelEmergencia: "Critica",
+  //   temperatura: 37.2,
+  //   frecuenciaCardiaca: 110,
+  //   frecuenciaRespiratoria: 32,
+  //   tensionArterial: {
+  //     frecuenciaSistolica: 140,
+  //     frecuenciaDiastolica: 90
+  //   },
+  //   estado: "PENDIENTE"
+  // },
+  // {
+  //   id: "ing-004",
+  //   paciente: PACIENTES_MOCK[3],
+  //   enfermera: {
+  //     uuid: "550e8400-e29b-41d4-a716-446655440002",
+  //     nombre: "Susana",
+  //     apellido: "Gimenez"
+  //   },
+  //   fechaIngreso: new Date("2024-12-03T12:00:00"),
+  //   informe: "Paciente con cefalea intensa, fotofobia y rigidez de nuca. Sospecha de meningitis. Requiere evaluación neurológica urgente.",
+  //   nivelEmergencia: "Emergencia",
+  //   temperatura: 39.2,
+  //   frecuenciaCardiaca: 105,
+  //   frecuenciaRespiratoria: 24,
+  //   tensionArterial: {
+  //     frecuenciaSistolica: 135,
+  //     frecuenciaDiastolica: 88
+  //   },
+  //   estado: "PENDIENTE"
+  // },
+  // {
+  //   id: "ing-005",
+  //   paciente: PACIENTES_MOCK[0],
+  //   enfermera: {
+  //     uuid: "550e8400-e29b-41d4-a716-446655440002",
+  //     nombre: "Susana",
+  //     apellido: "Gimenez"
+  //   },
+  //   fechaIngreso: new Date("2024-12-02T08:30:00"),
+  //   informe: "Paciente con esguince de tobillo. Tratamiento aplicado, evolución favorable.",
+  //   nivelEmergencia: "Urgencia Menor",
+  //   temperatura: 36.5,
+  //   frecuenciaCardiaca: 75,
+  //   frecuenciaRespiratoria: 16,
+  //   tensionArterial: {
+  //     frecuenciaSistolica: 118,
+  //     frecuenciaDiastolica: 75
+  //   },
+  //   estado: "FINALIZADO"
+  // },
+  // {
+  //   id: "ing-006",
+  //   paciente: PACIENTES_MOCK[1],
+  //   enfermera: {
+  //     uuid: "550e8400-e29b-41d4-a716-446655440002",
+  //     nombre: "Susana",
+  //     apellido: "Gimenez"
+  //   },
+  //   fechaIngreso: new Date("2024-12-02T14:20:00"),
+  //   informe: "Paciente con cuadro gripal. Medicación administrada, alta médica.",
+  //   nivelEmergencia: "Sin Urgencia",
+  //   temperatura: 37.8,
+  //   frecuenciaCardiaca: 82,
+  //   frecuenciaRespiratoria: 18,
+  //   tensionArterial: {
+  //     frecuenciaSistolica: 120,
+  //     frecuenciaDiastolica: 78
+  //   },
+  //   estado: "FINALIZADO"
+  // }
+]
 
 // Atenciones de ejemplo
 export const ATENCIONES_MOCK = [];

@@ -1,0 +1,74 @@
+.footer {
+  background: #1a202c;
+  border-top: 2px solid #4a5568;
+  padding: 20px 0;
+  margin-top: 40px;
+  margin-left: 0;
+  margin-right: 0;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.footer-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-row-university {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #4a5568;
+}
+
+.footer-row-teachers {
+  gap: 15px;
+  color: #e2e8f0;
+}
+
+.footer-row-developers {
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #4a5568;
+}
+
+.footer-row-copyright {
+  text-align: center;
+  color: #718096;
+  font-size: 0.8rem;
+  padding-top: 8px;
+}
+
+.footer-text-primary {
+  color: #cbd5e0;
+  font-weight: 600;
+}
+
+.footer-text-secondary {
+  color: #e2e8f0;
+}
+
+.footer-separator {
+  color: #718096;
+}
+
+.footer-label {
+  color: #cbd5e0;
+}

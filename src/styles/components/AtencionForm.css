@@ -1,0 +1,130 @@
+.atencion-form {
+  background: #2d3748;
+  border: 2px solid #4a5568;
+  border-radius: 12px;
+  padding: 30px;
+  margin-top: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.atencion-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #4a5568;
+}
+
+.atencion-form-title {
+  color: #cbd5e0;
+  font-size: 1.6rem;
+  margin: 0 0 5px 0;
+  font-weight: 700;
+}
+
+.atencion-form-subtitle {
+  color: #718096;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.atencion-form-medico-info {
+  background: #1a202c;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  border: 1px solid #4a5568;
+}
+
+.atencion-form-medico-label {
+  color: #cbd5e0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.atencion-form-medico-name {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.atencion-form-medico-matricula {
+  color: #718096;
+  font-size: 0.85rem;
+}
+
+.atencion-form-label {
+  display: block;
+  color: #cbd5e0;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.atencion-form-textarea {
+  min-height: 200px;
+  resize: vertical;
+  width: 100%;
+}
+
+.atencion-form-counter {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.atencion-form-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.atencion-form-submit-btn {
+  flex: 1;
+  padding: 15px;
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.atencion-form-submit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.atencion-form-cancel-btn {
+  padding: 15px 24px;
+  background: #ef4444;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #ffffff;
+  min-width: 150px;
+}
+
+.atencion-form-cancel-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.atencion-form-note {
+  margin-top: 20px;
+  padding: 15px;
+  background: #1a202c;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #cbd5e0;
+  border: 1px solid #4a5568;
+}
+
+.atencion-form-note strong {
+  font-weight: 600;
+}

@@ -1,0 +1,54 @@
+.user-header {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-header-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-header-badge {
+  background: #4a5568;
+  color: #cbd5e0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid #718096;
+}
+
+.user-header-user {
+  color: #fff;
+}
+
+.user-header-user-label {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.user-header-user-email {
+  font-weight: 600;
+}
+
+.user-header-logout-btn {
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.user-header-logout-btn:hover {
+  background: #dc2626;
+}

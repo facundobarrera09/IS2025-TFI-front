@@ -6,6 +6,7 @@ import UrgenciasPage from "./pages/UrgenciasPage";
 import PacientesPage from "./pages/PacientesPage";
 import ReclamoPage from "./pages/ReclamoPage";
 import UserHeader from "./components/UserHeader";
+import Footer from "./components/Footer";
 
 function AppContent() {
   const { usuario, estaAutenticado, cargando } = useAuth();
@@ -80,24 +81,40 @@ function AppContent() {
               <button
                 className={modulo === "pacientes" ? "tab active" : "tab"}
                 onClick={() => setModulo("pacientes")}
+                style={{ 
+             
+              background: '#0044ffff',
+              color: '#ffffff'
+            }}
               >
-                👥 Pacientes
+                Pacientes
+                
               </button>
             )}
             {tienePermiso('urgencias') && (
               <button
                 className={modulo === "urgencias" ? "tab active" : "tab"}
                 onClick={() => setModulo("urgencias")}
+                style={{ 
+             
+              background: '#0044ffff',
+              color: '#ffffff'
+            }}
               >
-                🏥 Urgencias
+                Urgencias
               </button>
             )}
             {tienePermiso('reclamo') && (
               <button
                 className={modulo === "reclamo" ? "tab active" : "tab"}
                 onClick={() => setModulo("reclamo")}
+                  style={{ 
+             
+              background: '#1ea3a3ff',
+              color: '#ffffff'
+            }}
               >
-                🩺 Reclamo
+                Reclamo
               </button>
             )}
           </div>
@@ -108,6 +125,9 @@ function AppContent() {
       {modulo === "urgencias" && tienePermiso('urgencias') && <UrgenciasPage />}
       {modulo === "pacientes" && tienePermiso('pacientes') && <PacientesPage />}
       {modulo === "reclamo" && tienePermiso('reclamo') && <ReclamoPage />}
+
+      {/* ---- Footer ---- */}
+      <Footer />
     </>
   );
 }

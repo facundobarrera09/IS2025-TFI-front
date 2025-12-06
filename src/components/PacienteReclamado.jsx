@@ -14,11 +14,11 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
 
   const getNivelColor = (nivel) => {
     const colores = {
-      'Critica': { bg: '#fee2e2', color: '#dc2626', emoji: '🔴' },
-      'Emergencia': { bg: '#ffedd5', color: '#ea580c', emoji: '🟠' },
-      'Urgencia': { bg: '#fef9c3', color: '#ca8a04', emoji: '🟡' },
-      'Urgencia Menor': { bg: '#dcfce7', color: '#16a34a', emoji: '🟢' },
-      'Sin Urgencia': { bg: '#dbeafe', color: '#2563eb', emoji: '🔵' }
+      'Critica': { bg: '#4a5568', color: '#e2e8f0' },
+      'Emergencia': { bg: '#4a5568', color: '#e2e8f0' },
+      'Urgencia': { bg: '#4a5568', color: '#e2e8f0' },
+      'Urgencia Menor': { bg: '#4a5568', color: '#e2e8f0' },
+      'Sin Urgencia': { bg: '#4a5568', color: '#e2e8f0' }
     };
     return colores[nivel] || colores['Sin Urgencia'];
   };
@@ -27,11 +27,11 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #ffffff, #f8fafc)',
-      border: '3px solid #10b981',
+      background: '#2d3748',
+      border: '2px solid #4a5568',
       borderRadius: '20px',
       padding: '30px',
-      boxShadow: '0 20px 60px rgba(16, 185, 129, 0.2)',
+      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
       animation: 'cardFadeIn 0.6s ease-out'
     }}>
       <div style={{
@@ -40,13 +40,12 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
         justifyContent: 'space-between',
         marginBottom: '25px',
         paddingBottom: '20px',
-        borderBottom: '2px solid #e5e7eb'
+        borderBottom: '2px solid #4a5568'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div style={{ fontSize: '3rem' }}>👤</div>
           <div>
             <h2 style={{ 
-              color: '#10b981', 
+              color: '#cbd5e0', 
               fontSize: '1.8rem', 
               margin: '0 0 5px 0',
               fontWeight: '700'
@@ -54,8 +53,8 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
               Paciente en Atención
             </h2>
             <span style={{
-              background: '#d1fae5',
-              color: '#065f46',
+              background: '#4a5568',
+              color: '#e2e8f0',
               padding: '4px 12px',
               borderRadius: '6px',
               fontSize: '0.85rem',
@@ -68,11 +67,20 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
         
         {!mostrarFormulario && (
           <button 
-            className="btn-modern btn-success"
             onClick={() => setMostrarFormulario(true)}
-            style={{ fontSize: '1rem', padding: '12px 24px' }}
+            style={{ 
+              fontSize: '1rem', 
+              padding: '12px 24px',
+              background: '#10b981',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
           >
-            📝 Registrar Atención
+            Registrar Atención
           </button>
         )}
       </div>
@@ -84,29 +92,29 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
       }}>
         {/* Datos del Paciente */}
         <div style={{
-          background: '#f9fafb',
+          background: '#1a202c',
           padding: '20px',
           borderRadius: '12px',
-          border: '1px solid #e5e7eb'
+          border: '1px solid #4a5568'
         }}>
           <h3 style={{ 
-            color: '#374151', 
+            color: '#cbd5e0', 
             fontSize: '1.1rem', 
             marginBottom: '15px',
             fontWeight: '600'
           }}>
-            📋 Datos del Paciente
+            Datos del Paciente
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div>
-              <strong style={{ color: '#6b7280', fontSize: '0.85rem' }}>Nombre:</strong>
-              <div style={{ color: '#1f2937', fontSize: '1.05rem', fontWeight: '600' }}>
+              <strong style={{ color: '#718096', fontSize: '0.85rem' }}>Nombre:</strong>
+              <div style={{ color: '#e2e8f0', fontSize: '1.05rem', fontWeight: '600' }}>
                 {ingreso.paciente.nombre} {ingreso.paciente.apellido}
               </div>
             </div>
             <div>
-              <strong style={{ color: '#6b7280', fontSize: '0.85rem' }}>CUIT:</strong>
-              <div style={{ color: '#1f2937', fontSize: '1rem' }}>
+              <strong style={{ color: '#718096', fontSize: '0.85rem' }}>CUIT:</strong>
+              <div style={{ color: '#e2e8f0', fontSize: '1rem' }}>
                 {ingreso.paciente.cuit}
               </div>
             </div>
@@ -121,12 +129,12 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
           border: `2px solid ${nivelColor.color}`
         }}>
           <h3 style={{ 
-            color: '#374151', 
+            color: '#cbd5e0', 
             fontSize: '1.1rem', 
             marginBottom: '15px',
             fontWeight: '600'
           }}>
-            🚨 Nivel de Emergencia
+            Nivel de Emergencia
           </h3>
           <div style={{
             fontSize: '1.5rem',
@@ -136,41 +144,41 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
             alignItems: 'center',
             gap: '10px'
           }}>
-            {nivelColor.emoji} {ingreso.nivelEmergencia}
+            {ingreso.nivelEmergencia}
           </div>
         </div>
 
         {/* Signos Vitales */}
         <div style={{
-          background: '#f9fafb',
+          background: '#1a202c',
           padding: '20px',
           borderRadius: '12px',
-          border: '1px solid #e5e7eb'
+          border: '1px solid #4a5568'
         }}>
           <h3 style={{ 
-            color: '#374151', 
+            color: '#cbd5e0', 
             fontSize: '1.1rem', 
             marginBottom: '15px',
             fontWeight: '600'
           }}>
-            💓 Signos Vitales
+            Signos Vitales
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.9rem' }}>
             <div>
-              <strong style={{ color: '#6b7280' }}>🌡️ Temp:</strong>
-              <div style={{ color: '#1f2937', fontWeight: '600' }}>{ingreso.temperatura}°C</div>
+              <strong style={{ color: '#718096' }}>Temp:</strong>
+              <div style={{ color: '#e2e8f0', fontWeight: '600' }}>{ingreso.temperatura}°C</div>
             </div>
             <div>
-              <strong style={{ color: '#6b7280' }}>❤️ FC:</strong>
-              <div style={{ color: '#1f2937', fontWeight: '600' }}>{ingreso.frecuenciaCardiaca} lpm</div>
+              <strong style={{ color: '#718096' }}>FC:</strong>
+              <div style={{ color: '#e2e8f0', fontWeight: '600' }}>{ingreso.frecuenciaCardiaca} lpm</div>
             </div>
             <div>
-              <strong style={{ color: '#6b7280' }}>🫁 FR:</strong>
-              <div style={{ color: '#1f2937', fontWeight: '600' }}>{ingreso.frecuenciaRespiratoria} rpm</div>
+              <strong style={{ color: '#718096' }}>FR:</strong>
+              <div style={{ color: '#e2e8f0', fontWeight: '600' }}>{ingreso.frecuenciaRespiratoria} rpm</div>
             </div>
             <div>
-              <strong style={{ color: '#6b7280' }}>🩺 TA:</strong>
-              <div style={{ color: '#1f2937', fontWeight: '600' }}>
+              <strong style={{ color: '#718096' }}>TA:</strong>
+              <div style={{ color: '#e2e8f0', fontWeight: '600' }}>
                 {ingreso.tensionArterial.frecuenciaSistolica}/{ingreso.tensionArterial.frecuenciaDiastolica} mmHg
               </div>
             </div>
@@ -179,22 +187,22 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
 
         {/* Informe */}
         <div style={{
-          background: '#f9fafb',
+          background: '#1a202c',
           padding: '20px',
           borderRadius: '12px',
-          border: '1px solid #e5e7eb',
+          border: '1px solid #4a5568',
           gridColumn: 'span 2'
         }}>
           <h3 style={{ 
-            color: '#374151', 
+            color: '#cbd5e0', 
             fontSize: '1.1rem', 
             marginBottom: '15px',
             fontWeight: '600'
           }}>
-            📝 Informe de Ingreso
+            Informe de Ingreso
           </h3>
           <div style={{ 
-            color: '#1f2937', 
+            color: '#e2e8f0', 
             lineHeight: '1.6',
             fontSize: '0.95rem'
           }}>
@@ -204,20 +212,20 @@ export default function PacienteReclamado({ ingreso, onRegistrarAtencion, onCanc
 
         {/* Enfermera */}
         <div style={{
-          background: '#f0f9ff',
+          background: '#1a202c',
           padding: '20px',
           borderRadius: '12px',
-          border: '1px solid #bfdbfe'
+          border: '1px solid #4a5568'
         }}>
           <h3 style={{ 
-            color: '#374151', 
+            color: '#cbd5e0', 
             fontSize: '1.1rem', 
             marginBottom: '15px',
             fontWeight: '600'
           }}>
-            👩‍⚕️ Enfermera de Ingreso
+            Enfermera de Ingreso
           </h3>
-          <div style={{ color: '#1f2937', fontSize: '1rem', fontWeight: '600' }}>
+          <div style={{ color: '#e2e8f0', fontSize: '1rem', fontWeight: '600' }}>
             {ingreso.enfermera.apellido}
           </div>
         </div>

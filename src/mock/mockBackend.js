@@ -89,7 +89,7 @@ export const mockPacientesService = {
     
     // Simular validación de obra social
     if (data.afiliado) {
-      const obrasSocialesValidas = ['OSDE', 'Swiss Medical', 'Galeno', 'OSECAC', 'OSPEDYC'];
+      const obrasSocialesValidas = ['Subsidio de salud'];
       if (!obrasSocialesValidas.includes(data.afiliado.obraSocial.nombre)) {
         return errorResponse("No se puede registrar al paciente con una obra social inexistente");
       }
@@ -273,3 +273,17 @@ export const mockAtencionesService = {
 
 // Inicializar datos al cargar el módulo
 inicializarDatos();
+
+// ==================== OBRAS SOCIALES ====================
+
+export const mockObrasSocialesService = {
+  getObrasSociales: async () => {
+    await delay(300);
+    
+    // Mock de obras sociales disponibles
+    // En producción esto vendría de la base de datos
+    const obrasSociales = ["Subsidio de salud"];
+    
+    return successResponse({ obrasSociales });
+  }
+};

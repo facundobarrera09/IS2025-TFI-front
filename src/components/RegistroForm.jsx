@@ -54,25 +54,24 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #ffffff, #f8fafc)',
-      border: '2px solid #10b981',
+      background: '#2d3748',
+      border: '2px solid #4a5568',
       borderRadius: '20px',
       padding: '40px',
       maxWidth: '450px',
       margin: '0 auto',
-      boxShadow: '0 20px 60px rgba(16, 185, 129, 0.2)'
+      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
     }}>
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <div style={{ fontSize: '4rem', marginBottom: '15px' }}>📝</div>
         <h2 style={{ 
-          color: '#059669', 
+          color: '#cbd5e0', 
           fontSize: '2rem', 
           margin: '0 0 10px 0',
           fontWeight: '700'
         }}>
           Crear Cuenta
         </h2>
-        <p style={{ color: '#6b7280', margin: 0 }}>
+        <p style={{ color: '#718096', margin: 0 }}>
           Complete el formulario para registrarse
         </p>
       </div>
@@ -99,8 +98,8 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
             className={errors['autoridad'] ? 'input-error' : ''}
           >
             <option value="">Seleccione su rol (*)</option>
-            <option value="MEDICO">👨‍⚕️ Médico</option>
-            <option value="ENFERMERA">👩‍⚕️ Enfermera</option>
+            <option value="MEDICO">Médico</option>
+            <option value="ENFERMERA">Enfermera</option>
           </select>
           {errors['autoridad'] && <div className="field-error">{errors['autoridad']}</div>}
         </div>
@@ -116,7 +115,7 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
             autoComplete="new-password"
           />
           {errors['password'] && <div className="field-error">{errors['password']}</div>}
-          <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '5px' }}>
+          <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '5px' }}>
             Mínimo 8 caracteres
           </div>
         </div>
@@ -135,21 +134,32 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
         </div>
 
         <div style={{
-          background: '#fef3c7',
+          background: '#1a202c',
           padding: '12px',
           borderRadius: '8px',
           fontSize: '0.85rem',
-          color: '#92400e',
-          border: '1px solid #fbbf24'
+          color: '#cbd5e0',
+          border: '1px solid #4a5568'
         }}>
-          <strong>🔒 Seguridad:</strong> Su contraseña será hasheada con algoritmos seguros (Argon2id/Bcrypt)
+          <strong>Seguridad:</strong> Su contraseña será hasheada con algoritmos seguros (Argon2id/Bcrypt)
         </div>
 
         <button 
           type="submit" 
-          className="btn-modern btn-success"
           disabled={loading}
-          style={{ width: '100%' }}
+          style={{ 
+            width: '100%',
+            padding: '15px',
+            background: '#10b981',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '12px',
+            fontSize: '1.05rem',
+            fontWeight: '600',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            transition: 'all 0.3s ease',
+            opacity: loading ? 0.7 : 1
+          }}
         >
           {loading ? (
             <>
@@ -157,7 +167,7 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
               Registrando...
             </>
           ) : (
-            '✅ Crear Cuenta'
+            'Crear Cuenta'
           )}
         </button>
       </form>
@@ -166,9 +176,9 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
         marginTop: '25px',
         textAlign: 'center',
         paddingTop: '20px',
-        borderTop: '1px solid #e5e7eb'
+        borderTop: '1px solid #4a5568'
       }}>
-        <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: '0 0 10px 0' }}>
+        <p style={{ color: '#718096', fontSize: '0.9rem', margin: '0 0 10px 0' }}>
           ¿Ya tienes una cuenta?
         </p>
         <button
@@ -176,7 +186,7 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
           style={{
             background: 'transparent',
             border: 'none',
-            color: '#2563eb',
+            color: '#3b82f6',
             fontSize: '1rem',
             fontWeight: '600',
             cursor: 'pointer',

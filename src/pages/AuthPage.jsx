@@ -1,6 +1,7 @@
 import { useState } from "react";
 import LoginForm from "../components/LoginForm";
 import { useAuth } from "../context/AuthContext";
+import Footer from "../components/Footer";
 
 export default function AuthPage() {
   const [errorModalVisible, setErrorModalVisible] = useState(false);
@@ -22,35 +23,43 @@ export default function AuthPage() {
     <div style={{
       minHeight: '100vh',
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px'
+      flexDirection: 'column'
     }}>
-      <div style={{ width: '100%', maxWidth: '500px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ 
-            fontSize: '2.5rem', 
-            color: '#fff',
-            textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
-            marginBottom: '10px'
-          }}>
-            🏥 Sistema Hospitalario
-          </h1>
-          <p style={{ color: '#e5e7eb', fontSize: '1.1rem' }}>
-            Gestión de Urgencias y Pacientes
-          </p>
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
+      }}>
+        <div style={{ width: '100%', maxWidth: '500px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h1 style={{ 
+              fontSize: '2.5rem', 
+              color: '#cbd5e0',
+              textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+              marginBottom: '10px'
+            }}>
+              Sistema Hospitalario
+            </h1>
+            <p style={{ color: '#718096', fontSize: '1.1rem' }}>
+              Gestión de Urgencias y Pacientes
+            </p>
+          </div>
+
+          <LoginForm 
+            onSubmit={handleLogin}
+          />
+
+          <ErrorModal 
+            visible={errorModalVisible} 
+            message={errorMessage} 
+            onClose={() => setErrorModalVisible(false)} 
+          />
         </div>
-
-        <LoginForm 
-          onSubmit={handleLogin}
-        />
-
-        <ErrorModal 
-          visible={errorModalVisible} 
-          message={errorMessage} 
-          onClose={() => setErrorModalVisible(false)} 
-        />
       </div>
+      
+      <Footer />
     </div>
   );
 }
@@ -62,12 +71,8 @@ function ErrorModal({ visible, message, onClose }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal error-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-icon" style={{ fontSize: '4rem' }}>
-          ❌
-        </div>
-        
         <header className="modal-header">
-          <h3 style={{ color: '#dc2626' }}>Error de Autenticación</h3>
+          <h3>Error de Autenticación</h3>
         </header>
 
         <div className="modal-body">
@@ -75,7 +80,20 @@ function ErrorModal({ visible, message, onClose }) {
         </div>
 
         <footer className="modal-footer">
-          <button className="btn-modern btn-error" onClick={onClose}>
+          <button 
+            onClick={onClose}
+            style={{
+              padding: '12px 30px',
+              background: '#ef4444',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '1rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+          >
             Cerrar
           </button>
         </footer>

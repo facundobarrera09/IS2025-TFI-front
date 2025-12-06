@@ -1,0 +1,119 @@
+.paciente-reclamado {
+  background: #2d3748;
+  border: 2px solid #4a5568;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: cardFadeIn 0.6s ease-out;
+}
+
+.paciente-reclamado-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #4a5568;
+}
+
+.paciente-reclamado-header-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.paciente-reclamado-title {
+  color: #cbd5e0;
+  font-size: 1.8rem;
+  margin: 0 0 5px 0;
+  font-weight: 700;
+}
+
+.paciente-reclamado-badge {
+  background: #4a5568;
+  color: #e2e8f0;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.paciente-reclamado-btn {
+  font-size: 1rem;
+  padding: 12px 24px;
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.paciente-reclamado-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.paciente-reclamado-card {
+  background: #1a202c;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #4a5568;
+}
+
+.paciente-reclamado-card-title {
+  color: #cbd5e0;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.paciente-reclamado-card-label {
+  color: #718096;
+  font-size: 0.85rem;
+}
+
+.paciente-reclamado-card-value {
+  color: #e2e8f0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.paciente-reclamado-card-text {
+  color: #e2e8f0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.paciente-reclamado-nivel {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.paciente-reclamado-signos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.paciente-reclamado-informe {
+  color: #e2e8f0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.paciente-reclamado-card-wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .paciente-reclamado-card-wide {
+    grid-column: span 1;
+  }
+}

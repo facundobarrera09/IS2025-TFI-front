@@ -52,25 +52,24 @@ export default function LoginForm({ onSubmit, onCambiarARegistro }) {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #ffffff, #f8fafc)',
-      border: '2px solid #3b82f6',
-      borderRadius: '20px',
+      background: '#2d3748',
+      border: '2px solid #4a5568',
+      borderRadius: '12px',
       padding: '40px',
       maxWidth: '450px',
       margin: '0 auto',
-      boxShadow: '0 20px 60px rgba(59, 130, 246, 0.2)'
+      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)'
     }}>
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <div style={{ fontSize: '4rem', marginBottom: '15px' }}>🔐</div>
         <h2 style={{ 
-          color: '#1e40af', 
+          color: '#cbd5e0', 
           fontSize: '2rem', 
           margin: '0 0 10px 0',
           fontWeight: '700'
         }}>
           Iniciar Sesión
         </h2>
-        <p style={{ color: '#6b7280', margin: 0 }}>
+        <p style={{ color: '#718096', margin: 0 }}>
           Ingrese sus credenciales para acceder
         </p>
       </div>
@@ -104,9 +103,20 @@ export default function LoginForm({ onSubmit, onCambiarARegistro }) {
 
         <button 
           type="submit" 
-          className="btn-modern"
           disabled={loading}
-          style={{ width: '100%' }}
+          style={{ 
+            width: '100%',
+            padding: '15px',
+            background: '#3b82f6',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '12px',
+            fontSize: '1.05rem',
+            fontWeight: '600',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            transition: 'all 0.3s ease',
+            opacity: loading ? 0.7 : 1
+          }}
         >
           {loading ? (
             <>
@@ -114,7 +124,7 @@ export default function LoginForm({ onSubmit, onCambiarARegistro }) {
               Iniciando sesión...
             </>
           ) : (
-            '🔓 Iniciar Sesión'
+            'Iniciar Sesión'
           )}
         </button>
       </form>
@@ -123,19 +133,19 @@ export default function LoginForm({ onSubmit, onCambiarARegistro }) {
         marginTop: '25px',
         textAlign: 'center',
         paddingTop: '20px',
-        borderTop: '1px solid #e5e7eb'
+        borderTop: '1px solid #4a5568'
       }}>
         <div style={{
-          background: '#f0f9ff',
+          background: '#1a202c',
           padding: '15px',
-          borderRadius: '10px',
+          borderRadius: '8px',
           fontSize: '0.85rem',
-          color: '#1e40af',
-          border: '1px solid #bfdbfe'
+          color: '#cbd5e0',
+          border: '1px solid #4a5568'
         }}>
-          <strong>👨‍⚕️ Médico:</strong> medico@hospital.com<br/>
-          <strong>👩‍⚕️ Enfermera:</strong> enfermera@hospital.com<br/>
-          <strong>🔑 Contraseña:</strong> password123
+          <strong>Médico:</strong> medico@hospital.com<br/>
+          <strong>Enfermera:</strong> enfermera@hospital.com<br/>
+          <strong>Contraseña:</strong> password123
         </div>
       </div>
     </div>

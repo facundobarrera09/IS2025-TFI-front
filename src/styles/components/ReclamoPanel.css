@@ -1,0 +1,54 @@
+.reclamo-panel {
+  background: #2d3748;
+  border: 2px solid #4a5568;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+}
+
+.reclamo-panel-title {
+  color: #cbd5e0;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.reclamo-panel-description {
+  color: #718096;
+  font-size: 1.05rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.reclamo-panel-btn {
+  font-size: 1.15rem;
+  padding: 18px 40px;
+  min-width: 280px;
+  position: relative;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reclamo-panel-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.reclamo-panel-note {
+  margin-top: 25px;
+  padding: 15px;
+  background: #1a202c;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #cbd5e0;
+  border: 1px solid #4a5568;
+}
+
+.reclamo-panel-note strong {
+  font-weight: 600;
+}

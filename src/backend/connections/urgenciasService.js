@@ -1,16 +1,25 @@
 import { api } from "./api";
 import { mockIngresosService } from "../../mock/mockBackend";
-
-// Configuración: usar mock o API real
-const USE_MOCK = true; // Cambiar a false cuando el backend esté listo
+import { USE_BACKEND } from "../../config/apiConfig";
 
 export const urgenciasService = {
-    /** @type {import("../../models/service.schema").ServiceFunction<undefined, import("../../models/dto/lista-ingresos.schema").ListaDeIngresos>} */
-    getIngresos: () => USE_MOCK ? mockIngresosService.getIngresos() : api.get("/ingresos"),
+  /** @type {import("../../models/service.schema").ServiceFunction<undefined, import("../../models/dto/lista-ingresos.schema").ListaDeIngresos>} */
+  getIngresos: () =>
+    USE_BACKEND ? api.get("/ingresos") : mockIngresosService.getIngresos(),
 
-    /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/crear-ingreso.schema").CrearIngresoDTO, null>} */
-    crearIngreso: (data) => USE_MOCK ? mockIngresosService.crearIngreso(data) : api.post("/ingresos", data),
+  /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/crear-ingreso.schema").CrearIngresoDTO, null>} */
+  crearIngreso: (data) =>
+    USE_BACKEND
+      ? api.post("/ingresos", data)
+      : mockIngresosService.crearIngreso(data),
 
-    /** @type {import("../../models/service.schema").ServiceFunction<undefined, any>} */
-    reclamarProximoPaciente: () => USE_MOCK ? mockIngresosService.reclamarProximoPaciente() : api.post("/ingresos/reclamar", {})
+  /** @type {import("../../models/service.schema").ServiceFunction<undefined, any>} */
+  reclamarProximoPaciente: () => {
+    if (USE_BACKEND) {
+      // Obtener el UUID del médico actual del localStorage
+      const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+      return api.post("/ingresos/reclamar", { medicoUuid: usuario.uuid });
+    }
+    return mockIngresosService.reclamarProximoPaciente();
+  },
 };

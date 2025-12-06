@@ -8,8 +8,8 @@ export default function PacientesTable({ data }) {
 
   return (
     <>
-      <div style={{ marginBottom: '15px', color: '#6b7280', fontSize: '0.9rem' }}>
-        👥 Total de pacientes: <strong>{data.length}</strong>
+      <div style={{ marginBottom: '15px', color: '#718096', fontSize: '0.9rem' }}>
+        Total de pacientes: <strong>{data.length}</strong>
       </div>
       
       <table className="table-modern">

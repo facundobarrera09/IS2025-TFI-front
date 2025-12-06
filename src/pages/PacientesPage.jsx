@@ -69,15 +69,25 @@ export default function PacientesPage() {
         <button
           className={tab === "form" ? "tab active" : "tab"}
           onClick={() => setTab("form")}
+          style={{ 
+             
+              background: '#1ea3a3ff',
+              color: '#ffffff'
+            }}
         >
-          ➕ Registrar Paciente
+          Registrar Paciente
         </button>
 
         <button
           className={tab === "list" ? "tab active" : "tab"}
           onClick={() => setTab("list")}
+           style={{ 
+             
+              background: '#1ea3a3ff',
+              color: '#ffffff'
+            }}
         >
-          👥 Lista de Pacientes
+          Lista de Pacientes
         </button>
       </div>
 
@@ -109,12 +119,8 @@ function ErrorModal({ visible, message, onClose }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal error-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-icon" style={{ fontSize: '4rem' }}>
-          ❌
-        </div>
-        
         <header className="modal-header">
-          <h3 style={{ color: '#dc2626' }}>Error</h3>
+          <h3 style={{ color: '#ef4444' }}>Error</h3>
         </header>
 
         <div className="modal-body">
@@ -122,7 +128,20 @@ function ErrorModal({ visible, message, onClose }) {
         </div>
 
         <footer className="modal-footer">
-          <button className="btn-modern btn-error" onClick={onClose}>
+          <button 
+            onClick={onClose}
+            style={{
+              padding: '12px 30px',
+              background: '#ef4444',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '1rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+          >
             Cerrar
           </button>
         </footer>

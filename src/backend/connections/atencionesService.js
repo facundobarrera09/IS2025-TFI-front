@@ -1,10 +1,11 @@
 import { api } from "./api";
 import { mockAtencionesService } from "../../mock/mockBackend";
-
-// Configuración: usar mock o API real
-const USE_MOCK = true; // Cambiar a false cuando el backend esté listo
+import { USE_BACKEND } from "../../config/apiConfig";
 
 export const atencionesService = {
-    /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/crear-atencion").CrearAtencionDTO, null>} */
-    crearAtencion: (data) => USE_MOCK ? mockAtencionesService.crearAtencion(data) : api.post("/atenciones", data)
+  /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/crear-atencion").CrearAtencionDTO, null>} */
+  crearAtencion: (data) =>
+    USE_BACKEND
+      ? api.post("/atenciones", data)
+      : mockAtencionesService.crearAtencion(data),
 };

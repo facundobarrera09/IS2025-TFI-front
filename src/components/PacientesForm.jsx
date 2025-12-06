@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CrearPacienteSchema } from "../models/dto/crear-paciente.schema";
+import { obrasSocialesService } from "../backend/connections/obrasSocialesService";
 
 export default function PacientesForm({ onSubmit }) {
   const initialForm = {
@@ -17,9 +18,34 @@ export default function PacientesForm({ onSubmit }) {
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [tieneObraSocial, setTieneObraSocial] = useState(false);
+  const [obrasSociales, setObrasSociales] = useState([]);
+
+  // Función para formatear CUIT automáticamente
+  const formatCUIT = (value) => {
+    // Remover todo excepto números
+    const numbers = value.replace(/\D/g, '');
+    
+    // Limitar a 11 dígitos
+    const limited = numbers.slice(0, 11);
+    
+    // Aplicar formato XX-XXXXXXXX-X
+    if (limited.length <= 2) {
+      return limited;
+    } else if (limited.length <= 10) {
+      return `${limited.slice(0, 2)}-${limited.slice(2)}`;
+    } else {
+      return `${limited.slice(0, 2)}-${limited.slice(2, 10)}-${limited.slice(10)}`;
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Formatear CUIT automáticamente
+    let processedValue = value;
+    if (name === 'cuit') {
+      processedValue = formatCUIT(value);
+    }
     
     // Limpiar errores del campo editado
     setErrors(prev => {
@@ -43,8 +69,10 @@ export default function PacientesForm({ onSubmit }) {
         }
       }));
     } else if (name.startsWith('afiliado.')) {
-      const field = name.split('.')[1];
-      if (field === 'obraSocial.nombre') {
+      const parts = name.split('.');
+      
+      if (name === 'afiliado.obraSocial.nombre') {
+        // Actualizar obra social
         setForm(prev => ({
           ...prev,
           afiliado: {
@@ -55,20 +83,37 @@ export default function PacientesForm({ onSubmit }) {
             numeroAfiliado: prev.afiliado?.numeroAfiliado || ""
           }
         }));
-      } else {
+      } else if (name === 'afiliado.numeroAfiliado') {
+        // Actualizar número de afiliado
         setForm(prev => ({
           ...prev,
           afiliado: {
             ...prev.afiliado,
             obraSocial: prev.afiliado?.obraSocial || { nombre: "" },
-            [field]: value
+            numeroAfiliado: value
           }
         }));
       }
     } else {
-      setForm(prev => ({ ...prev, [name]: value }));
+      setForm(prev => ({ ...prev, [name]: processedValue }));
     }
   };
+
+  useEffect(() => {
+    // Obtener obras sociales desde la API
+    const fetchObrasSociales = async () => {
+      const response = await obrasSocialesService.getObrasSociales();
+      
+      if (response.success) {
+        setObrasSociales(response.result.obrasSociales);
+      } else {
+        console.error("Error al obtener obras sociales:", response.error);
+        setObrasSociales([]);
+      }
+    };
+
+    fetchObrasSociales();
+  }, []);
 
   const handleObraSocialToggle = (e) => {
     const checked = e.target.checked;
@@ -138,6 +183,7 @@ export default function PacientesForm({ onSubmit }) {
           value={form.cuit}
           onChange={handleChange}
           className={errors['cuit'] ? 'input-error' : ''}
+          maxLength={13}
         />
         {errors['cuit'] && <div className="field-error">{errors['cuit']}</div>}
 
@@ -210,7 +256,7 @@ export default function PacientesForm({ onSubmit }) {
         <legend>Obra Social (Opcional)</legend>
         
         <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', color: '#374151' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', color: '#cbd5e0' }}>
             <input 
               type="checkbox" 
               checked={tieneObraSocial}
@@ -224,14 +270,29 @@ export default function PacientesForm({ onSubmit }) {
         {tieneObraSocial && (
           <div className="grid-2">
             <div>
-              <input 
+              <select 
                 name="afiliado.obraSocial.nombre" 
-                type="text" 
-                placeholder="Nombre de la Obra Social (*)" 
                 value={form.afiliado?.obraSocial?.nombre || ""}
                 onChange={handleChange}
                 className={errors['afiliado.obraSocial.nombre'] ? 'input-error' : ''}
-              />
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: '#2d3748',
+                  color: '#e2e8f0',
+                  border: '1px solid #4a5568',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="">Seleccione una Obra Social (*)</option>
+                {obrasSociales.map((obra, index) => (
+                  <option key={index} value={obra}>
+                    {obra}
+                  </option>
+                ))}
+              </select>
               {errors['afiliado.obraSocial.nombre'] && <div className="field-error">{errors['afiliado.obraSocial.nombre']}</div>}
             </div>
             <div>
@@ -249,8 +310,22 @@ export default function PacientesForm({ onSubmit }) {
         )}
       </fieldset>
 
-      <button type="submit" className="btn-modern">
-        👤 Registrar Paciente
+      <button 
+        type="submit" 
+        style={{
+          width: '100%',
+          padding: '15px',
+          background: '#10b981',
+          color: '#ffffff',
+          border: 'none',
+          borderRadius: '12px',
+          fontSize: '1.05rem',
+          fontWeight: '600',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        Registrar Paciente
       </button>
     </form>
   );

@@ -36,9 +36,29 @@ export default function UrgenciasForm({ onSubmit }) {
     "Sin Urgencia - Azul",
   ];
 
+  // Función para formatear CUIT automáticamente
+  const formatCUIT = (value) => {
+    // Remover todo excepto números
+    const numbers = value.replace(/\D/g, '');
+    
+    // Limitar a 11 dígitos
+    const limited = numbers.slice(0, 11);
+    
+    // Aplicar formato XX-XXXXXXXX-X
+    if (limited.length <= 2) {
+      return limited;
+    } else if (limited.length <= 10) {
+      return `${limited.slice(0, 2)}-${limited.slice(2)}`;
+    } else {
+      return `${limited.slice(0, 2)}-${limited.slice(2, 10)}-${limited.slice(10)}`;
+    }
+  };
+
   // Buscar paciente por CUIT
   const buscarPaciente = async (cuit) => {
-    if (!cuit || cuit.length < 11) {
+    // Remover guiones para la validación de longitud
+    const cuitSinGuiones = cuit.replace(/-/g, '');
+    if (!cuit || cuitSinGuiones.length < 11) {
       setPacienteEncontrado(null);
       return;
     }
@@ -90,49 +110,81 @@ export default function UrgenciasForm({ onSubmit }) {
       return updated;
     });
 
-    setForm({ ...form, [name]: value });
-
-
+    // Manejar campos anidados
+    if (name === 'cuit') {
+      setForm(prev => ({
+        ...prev,
+        paciente: {
+          ...prev.paciente,
+          cuit: value
+        }
+      }));
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
-  const handleTensionChange = () => {
-    const sistolica = document.querySelector('input[name="sistolica"]').value;
-    const diastolica = document.querySelector('input[name="diastolica"]').value;
-    setForm({ ...form, tensionArterial: `${sistolica}/${diastolica}` });
+  // Estado separado para sistólica y diastólica
+  const [sistolica, setSistolica] = useState("");
+  const [diastolica, setDiastolica] = useState("");
+
+  const handleTensionChange = (tipo, valor) => {
+    if (tipo === 'sistolica') {
+      setSistolica(valor);
+      setForm(prev => ({ ...prev, tensionArterial: `${valor}/${diastolica}` }));
+    } else {
+      setDiastolica(valor);
+      setForm(prev => ({ ...prev, tensionArterial: `${sistolica}/${valor}` }));
+    }
   };
 
   const submit = async (e) => {
     e.preventDefault();
 
+    console.log('Formulario enviado:', form);
+    console.log('Formulario JSON:', JSON.stringify(form, null, 2));
+
     const result = CrearIngreso.safeParse(form);
 
     if (!result.success) {
+      console.log('Errores de validación:', result.error.issues);
+      
       // mapear errores a un objeto { 'ruta': 'mensaje' }
       const mapped = {};
       result.error.issues.forEach((err) => {
         const key = (err.path && err.path.length) ? err.path.join('.') : '_form';
         mapped[key] = err.message || 'Valor inválido';
+        console.log(`Error en campo "${key}": ${err.message}`, 'Valor recibido:', err.received);
       });
 
+      console.log('Errores mapeados:', mapped);
+      console.log('Todos los errores:', JSON.stringify(mapped, null, 2));
       setErrors(mapped);
       return;
     }
+    
+    console.log('Validación exitosa, enviando datos...');
+    
     // validación OK -> limpiar errores
     setErrors({});
 
     // Espera el resultado de onSubmit para resetear solo si fue exitoso
     try {
       const result = await onSubmit(form);
+      console.log('Resultado de onSubmit:', result);
+      
       if (result) {
         // reset del formulario DOM y del estado interno
         e.target.reset();
         setForm(initialForm);
         setPacienteEncontrado(null);
+        setSistolica("");
+        setDiastolica("");
       }
     }
     catch (err) {
       // si onSubmit lanza, no reseteamos
-      console.error(err);
+      console.error('Error en onSubmit:', err);
     }
   };
 
@@ -140,13 +192,12 @@ export default function UrgenciasForm({ onSubmit }) {
     <Container fluid className="py-4">
       <Row className="justify-content-center">
         <Col lg={10} xl={8}>
-          <Card className="shadow-lg border-0 medical-card">
-            <Card.Header className="bg-primary text-white text-center py-4">
+          <Card className="shadow-lg border-0" style={{ background: '#2d3748', border: '2px solid #4a5568' }}>
+            <Card.Header style={{ background: '#1a202c', borderBottom: '2px solid #4a5568' }} className="text-center py-4">
               <div className="d-flex align-items-center justify-content-center mb-2">
-                <i className="fas fa-hospital-user fa-2x me-3"></i>
-                <h2 className="mb-0">Admisión de Emergencias</h2>
+                <h2 className="mb-0" style={{ color: '#cbd5e0' }}>Admisión de Emergencias</h2>
               </div>
-              <p className="mb-0 opacity-75">Registro de ingreso de pacientes a urgencias</p>
+              <p className="mb-0" style={{ color: '#718096' }}>Registro de ingreso de pacientes a urgencias</p>
             </Card.Header>
 
             <Card.Body className="p-4">
@@ -155,43 +206,58 @@ export default function UrgenciasForm({ onSubmit }) {
                 {/* Datos del Paciente */}
                 <div className="mb-4">
                   <div className="d-flex align-items-center mb-3">
-                    <i className="fas fa-user-injured text-primary me-2"></i>
-                    <h4 className="mb-0">Datos del Paciente</h4>
+                    <h4 className="mb-0" style={{ color: '#cbd5e0' }}>Datos del Paciente</h4>
                   </div>
 
-                  <Card className="border-primary">
+                  <Card style={{ background: '#1a202c', border: '1px solid #4a5568' }}>
                     <Card.Body>
                       <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold">
-                          <i className="fas fa-id-card me-1"></i>
-                          CUIT/CUIL del Paciente <span className="text-danger">*</span>
+                        <Form.Label className="fw-bold" style={{ color: '#cbd5e0' }}>
+                          CUIT/CUIL del Paciente <span style={{ color: '#ef4444' }}>*</span>
                         </Form.Label>
                         <Form.Control
                           type="text"
                           name="cuit"
                           placeholder="Ej: 20-12345678-9"
+                          value={form.paciente.cuit}
                           isInvalid={!!errors['paciente.cuit']}
+                          maxLength={13}
                           onChange={(e) => {
-                            const cuit = e.target.value;
-                            handleChange(e);
-                            buscarPaciente(cuit);
+                            const formattedCuit = formatCUIT(e.target.value);
+                            
+                            // Actualizar el estado directamente
+                            setForm(prev => ({
+                              ...prev,
+                              paciente: {
+                                ...prev.paciente,
+                                cuit: formattedCuit
+                              }
+                            }));
+                            
+                            // Limpiar errores
+                            setErrors(prev => {
+                              const updated = { ...prev };
+                              delete updated['paciente.cuit'];
+                              return updated;
+                            });
+                            
+                            // Buscar paciente
+                            buscarPaciente(formattedCuit);
                           }}
                         />
                         <Form.Control.Feedback type="invalid">
                           {errors['paciente.cuit']}
                         </Form.Control.Feedback>
                         {buscandoPaciente && (
-                          <Form.Text className="text-info">
-                            <i className="fas fa-spinner fa-spin me-1"></i>
+                          <Form.Text style={{ color: '#718096' }}>
                             Buscando paciente...
                           </Form.Text>
                         )}
                       </Form.Group>
 
                       {pacienteEncontrado && (
-                        <Alert variant="success" className="mb-3">
+                        <Alert style={{ background: '#4a5568', border: '1px solid #718096', color: '#e2e8f0' }} className="mb-3">
                           <div className="d-flex align-items-center mb-2">
-                            <i className="fas fa-check-circle me-2"></i>
                             <strong>Paciente Encontrado</strong>
                           </div>
                           <div className="ms-4">
@@ -204,10 +270,9 @@ export default function UrgenciasForm({ onSubmit }) {
                         </Alert>
                       )}
 
-                      {!pacienteEncontrado && form.paciente.cuit && !buscandoPaciente && form.paciente.cuit.length >= 11 && (
-                        <Alert variant="warning" className="mb-3">
+                      {!pacienteEncontrado && form.paciente.cuit && !buscandoPaciente && form.paciente.cuit.replace(/-/g, '').length >= 11 && (
+                        <Alert style={{ background: '#4a5568', border: '1px solid #718096', color: '#e2e8f0' }} className="mb-3">
                           <div className="d-flex align-items-center">
-                            <i className="fas fa-exclamation-triangle me-2"></i>
                             <div>
                               <strong>Paciente no encontrado</strong>
                               <div className="small">Debe registrar al paciente primero en el módulo de Pacientes</div>
@@ -222,21 +287,20 @@ export default function UrgenciasForm({ onSubmit }) {
                 {/* Datos del Ingreso */}
                 <div className="mb-4">
                   <div className="d-flex align-items-center mb-3">
-                    <i className="fas fa-clipboard-list text-success me-2"></i>
-                    <h4 className="mb-0">Datos del Ingreso</h4>
+                    <h4 className="mb-0" style={{ color: '#cbd5e0' }}>Datos del Ingreso</h4>
                   </div>
 
-                  <Card className="border-success">
+                  <Card style={{ background: '#1a202c', border: '1px solid #4a5568' }}>
                     <Card.Body>
                       <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold">
-                          <i className="fas fa-file-alt me-1"></i>
-                          Informe <span className="text-danger">*</span>
+                        <Form.Label className="fw-bold" style={{ color: '#cbd5e0' }}>
+                          Informe <span style={{ color: '#ef4444' }}>*</span>
                         </Form.Label>
                         <Form.Control
                           as="textarea"
                           rows={3}
                           name="informe"
+                          value={form.informe}
                           placeholder="Describa el motivo del ingreso y síntomas del paciente..."
                           isInvalid={!!errors['informe']}
                           onChange={handleChange}
@@ -247,18 +311,25 @@ export default function UrgenciasForm({ onSubmit }) {
                       </Form.Group>
 
                       <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold">
-                          <i className="fas fa-exclamation-triangle me-1"></i>
-                          Nivel de Emergencia <span className="text-danger">*</span>
+                        <Form.Label className="fw-bold" style={{ color: '#cbd5e0' }}>
+                          Nivel de Emergencia <span style={{ color: '#ef4444' }}>*</span>
                         </Form.Label>
                         <Form.Select
                           name="nivel"
+                          value={form.nivel}
                           isInvalid={!!errors['nivel']}
                           onChange={handleChange}
+                          style={{
+                            background: '#2d3748',
+                            color: '#e2e8f0',
+                            border: '1px solid #4a5568',
+                            padding: '10px',
+                            fontSize: '1rem'
+                          }}
                         >
-                          <option value="">Seleccione nivel de emergencia</option>
+                          <option value="" style={{ background: '#2d3748' }}>Seleccione nivel de emergencia</option>
                           {niveles.map((n) => (
-                            <option key={n} value={n.split(' - ')[0]}>
+                            <option key={n} value={n.split(' - ')[0]} style={{ background: '#2d3748', padding: '8px' }}>
                               {n}
                             </option>
                           ))}
@@ -270,21 +341,21 @@ export default function UrgenciasForm({ onSubmit }) {
 
                       {/* Signos Vitales */}
                       <div className="mb-3">
-                        <Form.Label className="fw-bold mb-3">
-                          <i className="fas fa-heartbeat me-1"></i>
+                        <Form.Label className="fw-bold mb-3" style={{ color: '#cbd5e0' }}>
                           Signos Vitales
                         </Form.Label>
                         <Row>
                           <Col md={4}>
                             <Form.Group className="mb-3">
-                              <Form.Label className="text-muted">
-                                <i className="fas fa-thermometer-half me-1"></i>
+                              <Form.Label style={{ color: '#718096' }}>
                                 Temperatura (°C)
                               </Form.Label>
                               <Form.Control
                                 type="number"
                                 step="0.1"
+                                min="0"
                                 name="temperatura"
+                                value={form.temperatura}
                                 placeholder="36.5"
                                 isInvalid={!!errors['temperatura']}
                                 onChange={handleChange}
@@ -296,14 +367,15 @@ export default function UrgenciasForm({ onSubmit }) {
                           </Col>
                           <Col md={4}>
                             <Form.Group className="mb-3">
-                              <Form.Label className="text-muted">
-                                <i className="fas fa-heart me-1"></i>
+                              <Form.Label style={{ color: '#718096' }}>
                                 Frecuencia Cardíaca (lpm)
                               </Form.Label>
                               <Form.Control
                                 type="number"
                                 step="0.1"
+                                min="0"
                                 name="frecuenciaCardiaca"
+                                value={form.frecuenciaCardiaca}
                                 placeholder="70"
                                 isInvalid={!!errors['frecuenciaCardiaca']}
                                 onChange={handleChange}
@@ -315,14 +387,15 @@ export default function UrgenciasForm({ onSubmit }) {
                           </Col>
                           <Col md={4}>
                             <Form.Group className="mb-3">
-                              <Form.Label className="text-muted">
-                                <i className="fas fa-lungs me-1"></i>
+                              <Form.Label style={{ color: '#718096' }}>
                                 Frecuencia Respiratoria (rpm)
                               </Form.Label>
                               <Form.Control
                                 type="number"
                                 step="0.1"
+                                min="0"
                                 name="frecuenciaRespiratoria"
+                                value={form.frecuenciaRespiratoria}
                                 placeholder="16"
                                 isInvalid={!!errors['frecuenciaRespiratoria']}
                                 onChange={handleChange}
@@ -337,32 +410,33 @@ export default function UrgenciasForm({ onSubmit }) {
 
                       {/* Tensión Arterial */}
                       <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold">
-                          <i className="fas fa-stethoscope me-1"></i>
-                          Tensión Arterial (mmHg) <span className="text-danger">*</span>
+                        <Form.Label className="fw-bold" style={{ color: '#cbd5e0' }}>
+                          Tensión Arterial (mmHg) <span style={{ color: '#ef4444' }}>*</span>
                         </Form.Label>
                         <Row>
                           <Col md={6}>
                             <Form.Control
                               type="number"
+                              min="0"
                               name="sistolica"
+                              value={sistolica}
                               placeholder="Sistólica (120)"
                               isInvalid={!!errors['tensionArterial']}
                               onChange={(e) => {
-                                handleChange(e);
-                                handleTensionChange();
+                                handleTensionChange('sistolica', e.target.value);
                               }}
                             />
                           </Col>
                           <Col md={6}>
                             <Form.Control
                               type="number"
+                              min="0"
                               name="diastolica"
+                              value={diastolica}
                               placeholder="Diastólica (80)"
                               isInvalid={!!errors['tensionArterial']}
                               onChange={(e) => {
-                                handleChange(e);
-                                handleTensionChange();
+                                handleTensionChange('diastolica', e.target.value);
                               }}
                             />
                           </Col>
@@ -370,7 +444,7 @@ export default function UrgenciasForm({ onSubmit }) {
                         <Form.Control.Feedback type="invalid" className="d-block">
                           {errors['tensionArterial']}
                         </Form.Control.Feedback>
-                        <Form.Text className="text-muted">
+                        <Form.Text style={{ color: '#718096' }}>
                           Formato: Sistólica/Diastólica (ej: 120/80)
                         </Form.Text>
                       </Form.Group>
@@ -385,12 +459,12 @@ export default function UrgenciasForm({ onSubmit }) {
                     size="lg"
                     className="px-5 py-3 fw-bold"
                     style={{
-                      background: 'linear-gradient(135deg, #007bff, #0056b3)',
+                      background: '#10b981',
                       border: 'none',
-                      boxShadow: '0 4px 15px rgba(0,123,255,0.3)'
+                      color: '#ffffff',
+                      boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
                     }}
                   >
-                    <i className="fas fa-save me-2"></i>
                     Registrar Ingreso de Emergencia
                   </Button>
                 </div>

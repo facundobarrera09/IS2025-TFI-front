@@ -1,0 +1,64 @@
+.login-form-container {
+  background: #2d3748;
+  border: 2px solid #4a5568;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 450px;
+  margin: 0 auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.login-form-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-form-title {
+  color: #cbd5e0;
+  font-size: 2rem;
+  margin: 0 0 10px 0;
+  font-weight: 700;
+}
+
+.login-form-subtitle {
+  color: #718096;
+  margin: 0;
+}
+
+.login-form-submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-form-submit-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-form-footer {
+  margin-top: 25px;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #4a5568;
+}
+
+.login-form-credentials {
+  background: #1a202c;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #cbd5e0;
+  border: 1px solid #4a5568;
+}
+
+.login-form-credentials strong {
+  color: #cbd5e0;
+}

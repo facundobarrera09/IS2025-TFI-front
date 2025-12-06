@@ -60,12 +60,12 @@ export default function AtencionForm({ ingreso, onSubmit, onCancel }) {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #ffffff, #f8fafc)',
-      border: '2px solid #3b82f6',
-      borderRadius: '20px',
+      background: '#2d3748',
+      border: '2px solid #4a5568',
+      borderRadius: '12px',
       padding: '30px',
       marginTop: '20px',
-      boxShadow: '0 10px 40px rgba(59, 130, 246, 0.15)'
+      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)'
     }}>
       <div style={{
         display: 'flex',
@@ -73,44 +73,38 @@ export default function AtencionForm({ ingreso, onSubmit, onCancel }) {
         justifyContent: 'space-between',
         marginBottom: '25px',
         paddingBottom: '20px',
-        borderBottom: '2px solid #e5e7eb'
+        borderBottom: '2px solid #4a5568'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div style={{ fontSize: '2.5rem' }}>📝</div>
-          <div>
-            <h2 style={{ 
-              color: '#1e40af', 
-              fontSize: '1.6rem', 
-              margin: '0 0 5px 0',
-              fontWeight: '700'
-            }}>
-              Registrar Atención Médica
-            </h2>
-            <p style={{ color: '#6b7280', margin: 0, fontSize: '0.9rem' }}>
-              Complete el informe de atención del paciente
-            </p>
-          </div>
+        <div>
+          <h2 style={{ 
+            color: '#cbd5e0', 
+            fontSize: '1.6rem', 
+            margin: '0 0 5px 0',
+            fontWeight: '700'
+          }}>
+            Registrar Atención Médica
+          </h2>
+          <p style={{ color: '#718096', margin: 0, fontSize: '0.9rem' }}>
+            Complete el informe de atención del paciente
+          </p>
         </div>
       </div>
 
       {/* Info del médico */}
       <div style={{
-        background: '#f0f9ff',
+        background: '#1a202c',
         padding: '15px 20px',
-        borderRadius: '12px',
+        borderRadius: '8px',
         marginBottom: '25px',
-        border: '1px solid #bfdbfe'
+        border: '1px solid #4a5568'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '1.5rem' }}>👨‍⚕️</span>
-          <div>
-            <strong style={{ color: '#1e40af', fontSize: '0.85rem' }}>Médico:</strong>
-            <div style={{ color: '#1f2937', fontWeight: '600' }}>
-              Dr. {medicoActual.nombre} {medicoActual.apellido}
-            </div>
-            <div style={{ color: '#6b7280', fontSize: '0.85rem' }}>
-              Matrícula: {medicoActual.matricula}
-            </div>
+        <div>
+          <strong style={{ color: '#cbd5e0', fontSize: '0.85rem' }}>Médico:</strong>
+          <div style={{ color: '#e2e8f0', fontWeight: '600' }}>
+            Dr. {medicoActual.nombre} {medicoActual.apellido}
+          </div>
+          <div style={{ color: '#718096', fontSize: '0.85rem' }}>
+            Matrícula: {medicoActual.matricula}
           </div>
         </div>
       </div>
@@ -119,7 +113,7 @@ export default function AtencionForm({ ingreso, onSubmit, onCancel }) {
         <div>
           <label style={{
             display: 'block',
-            color: '#374151',
+            color: '#cbd5e0',
             fontWeight: '600',
             marginBottom: '10px',
             fontSize: '1rem'
@@ -151,7 +145,7 @@ export default function AtencionForm({ ingreso, onSubmit, onCancel }) {
           <div style={{
             marginTop: '8px',
             fontSize: '0.85rem',
-            color: '#6b7280'
+            color: '#718096'
           }}>
             Mínimo 10 caracteres. Caracteres actuales: {informe.length}
           </div>
@@ -164,9 +158,20 @@ export default function AtencionForm({ ingreso, onSubmit, onCancel }) {
         }}>
           <button 
             type="submit" 
-            className="btn-modern"
             disabled={loading}
-            style={{ flex: 1 }}
+            style={{ 
+              flex: 1,
+              padding: '15px',
+              background: '#10b981',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '1.05rem',
+              fontWeight: '600',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.3s ease',
+              opacity: loading ? 0.7 : 1
+            }}
           >
             {loading ? (
               <>
@@ -174,9 +179,7 @@ export default function AtencionForm({ ingreso, onSubmit, onCancel }) {
                 Guardando...
               </>
             ) : (
-              <>
-                ✅ Finalizar y Guardar Atención
-              </>
+              'Finalizar y Guardar Atención'
             )}
           </button>
           
@@ -186,18 +189,19 @@ export default function AtencionForm({ ingreso, onSubmit, onCancel }) {
             disabled={loading}
             style={{
               padding: '15px 24px',
-              background: 'linear-gradient(135deg, #6b7280, #4b5563)',
+              background: '#ef4444',
               borderRadius: '12px',
               fontSize: '1.05rem',
               fontWeight: '600',
               border: 'none',
-              cursor: 'pointer',
+              cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'all 0.3s ease',
               color: '#ffffff',
-              minWidth: '150px'
+              minWidth: '150px',
+              opacity: loading ? 0.7 : 1
             }}
           >
-            ❌ Cancelar
+            Cancelar
           </button>
         </div>
       </form>
@@ -205,13 +209,13 @@ export default function AtencionForm({ ingreso, onSubmit, onCancel }) {
       <div style={{
         marginTop: '20px',
         padding: '15px',
-        background: 'rgba(239, 68, 68, 0.1)',
-        borderRadius: '10px',
+        background: '#1a202c',
+        borderRadius: '8px',
         fontSize: '0.85rem',
-        color: '#dc2626',
-        border: '1px solid rgba(239, 68, 68, 0.3)'
+        color: '#cbd5e0',
+        border: '1px solid #4a5568'
       }}>
-        <strong>⚠️ Importante:</strong> Al finalizar la atención, el estado del ingreso cambiará a FINALIZADO y el paciente saldrá del sistema de urgencias.
+        <strong>Importante:</strong> Al finalizar la atención, el estado del ingreso cambiará a FINALIZADO y el paciente saldrá del sistema de urgencias.
       </div>
     </div>
   );

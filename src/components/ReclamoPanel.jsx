@@ -15,18 +15,14 @@ export default function ReclamoPanel({ onReclamar }) {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
-      border: '2px solid #3b82f6',
-      borderRadius: '16px',
+      background: '#2d3748',
+      border: '2px solid #4a5568',
+      borderRadius: '12px',
       padding: '30px',
       textAlign: 'center'
     }}>
-      <div style={{ fontSize: '4rem', marginBottom: '20px' }}>
-        🩺
-      </div>
-      
       <h2 style={{ 
-        color: '#1e40af', 
+        color: '#cbd5e0', 
         fontSize: '1.8rem', 
         marginBottom: '15px',
         fontWeight: '700'
@@ -35,7 +31,7 @@ export default function ReclamoPanel({ onReclamar }) {
       </h2>
       
       <p style={{ 
-        color: '#475569', 
+        color: '#718096', 
         fontSize: '1.05rem', 
         marginBottom: '30px',
         lineHeight: '1.6'
@@ -44,14 +40,21 @@ export default function ReclamoPanel({ onReclamar }) {
       </p>
 
       <button 
-        className="btn-modern"
         onClick={handleReclamar}
         disabled={loading}
         style={{
           fontSize: '1.15rem',
           padding: '18px 40px',
           minWidth: '280px',
-          position: 'relative'
+          position: 'relative',
+          background: '#3b82f6',
+          color: '#ffffff',
+          border: 'none',
+          borderRadius: '12px',
+          fontWeight: '600',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          transition: 'all 0.3s ease',
+          opacity: loading ? 0.7 : 1
         }}
       >
         {loading ? (
@@ -60,21 +63,20 @@ export default function ReclamoPanel({ onReclamar }) {
             Reclamando...
           </>
         ) : (
-          <>
-            🔔 Reclamar Paciente
-          </>
+          'Reclamar Paciente'
         )}
       </button>
 
       <div style={{
         marginTop: '25px',
         padding: '15px',
-        background: 'rgba(59, 130, 246, 0.1)',
-        borderRadius: '10px',
+        background: '#1a202c',
+        borderRadius: '8px',
         fontSize: '0.9rem',
-        color: '#1e40af'
+        color: '#cbd5e0',
+        border: '1px solid #4a5568'
       }}>
-        <strong>ℹ️ Nota:</strong> El paciente reclamado cambiará de estado PENDIENTE a EN_PROCESO y será removido de la lista de espera.
+        <strong>Nota:</strong> El paciente reclamado cambiará de estado PENDIENTE a EN_PROCESO y será removido de la lista de espera.
       </div>
     </div>
   );
