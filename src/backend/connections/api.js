@@ -1,6 +1,6 @@
 import BaseError from "../../models/base-error.schema"
 
-const API_URL = "http://localhost:8080"
+const API_URL = "https://backend-tfi.onrender.com/"
 
 export const api = {
     /** @type {import("../../models/service.schema").APIFunction<import("../../models/dto/lista-ingresos.schema").ListaDeIngresos>} */
