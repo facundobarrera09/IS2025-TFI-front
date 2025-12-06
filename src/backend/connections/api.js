@@ -15,6 +15,7 @@ const getHeaders = () => {
   return headers;
 };
 
+
 export const api = {
   /** @type {import("../../models/service.schema").APIFunction<any>} */
   get: async (endpoint) => {
