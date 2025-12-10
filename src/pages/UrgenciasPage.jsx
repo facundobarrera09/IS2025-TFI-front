@@ -16,6 +16,15 @@ export default function UrgenciasPage() {
 
     if (!response.success) {
       console.log('No se pudo crear el ingreso:', response.error.context);
+      
+      // Mostrar error al usuario
+      const errorMessage = response.error.context?.message || 'Error al crear el ingreso';
+      setModalMessage(`Error: ${errorMessage}`);
+      setModalVisible(true);
+      
+      // Auto cerrar después de 5 segundos para errores
+      setTimeout(() => setModalVisible(false), 5000);
+      
       return false;
     }
 
@@ -36,12 +45,60 @@ export default function UrgenciasPage() {
     const response = await urgenciasService.getIngresos();
 
     if (response.success) {
-      console.log(response.result.listaDeIngresos);
-      const todosIngresos = response.result.listaDeIngresos;
+      console.log('Respuesta completa del backend:', response.result);
       
-      // Separar pendientes y finalizados
-      const pendientes = todosIngresos.filter(ing => ing.estado === 'PENDIENTE');
-      const finalizados = todosIngresos.filter(ing => ing.estado === 'FINALIZADO');
+      let todosIngresos = [];
+      
+      // Manejar diferentes formatos de respuesta del backend
+      if (response.result) {
+        if (response.result.listaDeIngresos) {
+          // Formato: { listaDeIngresos: PriorityQueue }
+          const listaDeIngresos = response.result.listaDeIngresos;
+          console.log('Lista de ingresos raw:', listaDeIngresos);
+          
+          if (Array.isArray(listaDeIngresos)) {
+            todosIngresos = listaDeIngresos;
+          } else if (listaDeIngresos && typeof listaDeIngresos === 'object') {
+            // PriorityQueue se serializa de diferentes maneras
+            // Intentar convertir a array
+            try {
+              // Si tiene propiedades numéricas (índices)
+              const keys = Object.keys(listaDeIngresos);
+              if (keys.length > 0 && keys.every(key => !isNaN(key))) {
+                todosIngresos = Object.values(listaDeIngresos);
+              } else {
+                // Buscar propiedades que contengan arrays o elementos válidos
+                todosIngresos = Object.values(listaDeIngresos).filter(item => 
+                  item && typeof item === 'object' && item.paciente
+                );
+              }
+            } catch (e) {
+              console.warn('Error procesando PriorityQueue:', e);
+              todosIngresos = [];
+            }
+          }
+        } else if (Array.isArray(response.result)) {
+          // Formato directo: Array de ingresos
+          todosIngresos = response.result;
+        } else if (response.result.paciente) {
+          // Formato: Un solo ingreso
+          todosIngresos = [response.result];
+        }
+      }
+      
+      console.log('Ingresos procesados:', todosIngresos);
+      console.log('Cantidad de ingresos:', todosIngresos.length);
+      
+      // Filtrar por estado usando los enums del backend
+      const pendientes = todosIngresos.filter(ing => 
+        !ing.estado || ing.estado === 'PENDIENTE'
+      );
+      const finalizados = todosIngresos.filter(ing => 
+        ing.estado === 'FINALIZADO'
+      );
+      
+      console.log('Pendientes filtrados:', pendientes.length);
+      console.log('Finalizados filtrados:', finalizados.length);
       
       setIngresos(pendientes);
       setIngresosFinalizados(finalizados);

@@ -29,6 +29,8 @@ export const AuthProvider = ({ children }) => {
     
     if (response.success) {
       const { token, usuario } = response.result;
+      console.log('Token recibido:', token);
+      console.log('Usuario recibido:', usuario);
       authService.guardarSesion(token, usuario);
       setUsuario(usuario);
       return { success: true };
@@ -43,20 +45,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const registro = async (data) => {
-    const response = await authService.registro(data);
-    
-    if (response.success) {
-      const { token, usuario } = response.result;
-      authService.guardarSesion(token, usuario);
-      setUsuario(usuario);
-      return { success: true };
-    }
-    
+    // El registro no está implementado en el backend
     return { 
       success: false, 
-      error: response.error?.context?.message?.message || 
-             response.error?.context?.message || 
-             "Error al registrar usuario"
+      error: "Registro no disponible en el backend actual"
     };
   };
 

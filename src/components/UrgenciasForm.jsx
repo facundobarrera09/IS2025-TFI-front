@@ -1,9 +1,21 @@
 import { useState } from "react";
 import { CrearIngreso } from "../models/dto/crear-ingreso.schema";
 import { pacientesService } from "../backend/connections/pacientesService";
-import { Container, Row, Col, Card, Form, Button, Alert, Badge } from 'react-bootstrap';
+import { useAuth } from "../context/AuthContext";
+import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 
 export default function UrgenciasForm({ onSubmit }) {
+  const { usuario } = useAuth();
+  
+  // UUID de la enfermera del backend - por ahora hardcodeado ya que el backend no lo proporciona en el login
+  const getEnfermeraUuid = () => {
+    if (usuario?.autoridad === "ENFERMERO") {
+      // Este es el UUID de la enfermera en el backend (enf@mail.com)
+      return "4c300fec-ed8f-4365-ac77-3d5b70a4e990";
+    }
+    return "4c300fec-ed8f-4365-ac77-3d5b70a4e990"; // Fallback
+  };
+
   /** @type {[import("../models/dto/crear-ingreso.schema").CrearIngresoDTO, any]} */
   const initialForm = {
     paciente: {
@@ -13,7 +25,7 @@ export default function UrgenciasForm({ onSubmit }) {
       domicilio: undefined
     },
     enfermera: {
-      uuid: "4c300fec-ed8f-4365-ac77-3d5b70a4e990"
+      uuid: getEnfermeraUuid()
     },
     informe: "",
     nivel: "",
@@ -30,7 +42,7 @@ export default function UrgenciasForm({ onSubmit }) {
 
   const niveles = [
     "Critica - Rojo",
-    "Emergencia - Naranja",
+    "Emergencia - Naranja", 
     "Urgencia - Amarillo",
     "Urgencia Menor - Verde",
     "Sin Urgencia - Azul",
@@ -67,32 +79,18 @@ export default function UrgenciasForm({ onSubmit }) {
     const response = await pacientesService.getPacienteByCuit(cuit);
     setBuscandoPaciente(false);
 
-    if (response.success) {
-      const paciente = response.result;
-      setPacienteEncontrado(paciente);
-      
-      // Autocompletar formulario
-      setForm(prev => ({
-        ...prev,
-        paciente: {
-          cuit: paciente.cuit,
-          apellido: paciente.apellido,
-          nombre: paciente.nombre,
-          domicilio: paciente.domicilio
-        }
-      }));
-    } else {
-      setPacienteEncontrado(null);
-      setForm(prev => ({
-        ...prev,
-        paciente: {
-          cuit,
-          apellido: undefined,
-          nombre: undefined,
-          domicilio: undefined
-        }
-      }));
-    }
+    // Como el backend no tiene endpoint de pacientes, siempre será false
+    // Permitir que el usuario complete manualmente los datos
+    setPacienteEncontrado(null);
+    setForm(prev => ({
+      ...prev,
+      paciente: {
+        cuit,
+        apellido: undefined,
+        nombre: undefined,
+        domicilio: undefined
+      }
+    }));
   };
 
   const handleChange = (e) => {
@@ -271,14 +269,61 @@ export default function UrgenciasForm({ onSubmit }) {
                       )}
 
                       {!pacienteEncontrado && form.paciente.cuit && !buscandoPaciente && form.paciente.cuit.replace(/-/g, '').length >= 11 && (
-                        <Alert style={{ background: '#4a5568', border: '1px solid #718096', color: '#e2e8f0' }} className="mb-3">
-                          <div className="d-flex align-items-center">
-                            <div>
-                              <strong>Paciente no encontrado</strong>
-                              <div className="small">Debe registrar al paciente primero en el módulo de Pacientes</div>
+                        <>
+                          <Alert style={{ background: '#4a5568', border: '1px solid #718096', color: '#e2e8f0' }} className="mb-3">
+                            <div className="d-flex align-items-center">
+                              <div>
+                                <strong>Búsqueda de pacientes no disponible</strong>
+                                <div className="small">El backend no tiene implementado el módulo de pacientes. Complete los datos manualmente.</div>
+                              </div>
+                            </div>
+                          </Alert>
+                          
+                          <div className="row">
+                            <div className="col-md-6">
+                              <Form.Group className="mb-3">
+                                <Form.Label style={{ color: '#cbd5e0' }}>
+                                  Nombre del Paciente <span style={{ color: '#ef4444' }}>*</span>
+                                </Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder="Nombre"
+                                  value={form.paciente.nombre || ''}
+                                  onChange={(e) => {
+                                    setForm(prev => ({
+                                      ...prev,
+                                      paciente: {
+                                        ...prev.paciente,
+                                        nombre: e.target.value
+                                      }
+                                    }));
+                                  }}
+                                />
+                              </Form.Group>
+                            </div>
+                            <div className="col-md-6">
+                              <Form.Group className="mb-3">
+                                <Form.Label style={{ color: '#cbd5e0' }}>
+                                  Apellido del Paciente <span style={{ color: '#ef4444' }}>*</span>
+                                </Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder="Apellido"
+                                  value={form.paciente.apellido || ''}
+                                  onChange={(e) => {
+                                    setForm(prev => ({
+                                      ...prev,
+                                      paciente: {
+                                        ...prev.paciente,
+                                        apellido: e.target.value
+                                      }
+                                    }));
+                                  }}
+                                />
+                              </Form.Group>
                             </div>
                           </div>
-                        </Alert>
+                        </>
                       )}
                     </Card.Body>
                   </Card>

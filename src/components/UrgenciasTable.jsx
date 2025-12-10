@@ -3,7 +3,7 @@
  * @param {import('../models/ingreso.schema').default[]} props.data 
  */
 export default function UrgenciasTable({ data }) {
-  if (data.length === 0)
+  if (!data || data.length === 0)
     return <p className="empty">No hay pacientes registrados.</p>;
 
   // Definir prioridades de los niveles de emergencia (menor número = mayor prioridad)
@@ -15,11 +15,31 @@ export default function UrgenciasTable({ data }) {
     'Sin Urgencia': 5
   };
 
+  // Función para obtener el nivel de emergencia normalizado
+  const getNivelNormalizado = (nivel) => {
+    if (!nivel) return 'Sin Urgencia';
+    
+    // El backend devuelve el enum NivelEmergencia con propiedad 'nombre'
+    if (typeof nivel === 'object' && nivel.nombre) {
+      return nivel.nombre;
+    }
+    
+    // Si es string directo
+    if (typeof nivel === 'string') {
+      return nivel;
+    }
+    
+    return nivel.toString();
+  };
+
   // Ordenar los datos por nivel de emergencia (mayor prioridad primero)
   // Si tienen la misma prioridad, ordenar por fecha de ingreso (primero el más antiguo)
   const datosOrdenados = [...data].sort((a, b) => {
-    const prioridadA = prioridades[a.nivelEmergencia] || 999;
-    const prioridadB = prioridades[b.nivelEmergencia] || 999;
+    const nivelA = getNivelNormalizado(a.nivelEmergencia);
+    const nivelB = getNivelNormalizado(b.nivelEmergencia);
+    
+    const prioridadA = prioridades[nivelA] || 999;
+    const prioridadB = prioridades[nivelB] || 999;
     
     // Comparar por prioridad primero
     if (prioridadA !== prioridadB) {
@@ -95,18 +115,35 @@ export default function UrgenciasTable({ data }) {
         <tbody>
           {datosOrdenados.map((ingreso, index) => (
             <tr key={index}>
-              <td style={{ fontWeight: '600' }}>{ingreso.paciente.cuit}</td>
+              <td style={{ fontWeight: '600' }}>{ingreso.paciente?.cuit || 'N/A'}</td>
               <td>
                 <div className="shorten-text">
-                  {ingreso.informe}
+                  {ingreso.informe || 'Sin informe'}
                 </div>
               </td>
-              <td>{getNivelBadge(ingreso.nivelEmergencia)}</td>
-              <td>{ingreso.temperatura}°C</td>
-              <td>{ingreso.frecuenciaCardiaca}</td>
-              <td>{ingreso.frecuenciaRespiratoria}</td>
-              <td>{ingreso.tensionArterial.frecuenciaSistolica}/{ingreso.tensionArterial.frecuenciaDiastolica}</td>
-              <td>{ingreso.enfermera.apellido}</td>
+              <td>{getNivelBadge(getNivelNormalizado(ingreso.nivelEmergencia))}</td>
+              <td>{ingreso.temperatura ? `${ingreso.temperatura}°C` : 'N/A'}</td>
+              <td>{ingreso.frecuenciaCardiaca || 'N/A'}</td>
+              <td>{ingreso.frecuenciaRespiratoria || 'N/A'}</td>
+              <td>
+                {(() => {
+                  const ta = ingreso.tensionArterial;
+                  if (!ta) return 'N/A';
+                  
+                  // Si es objeto con propiedades sistólica y diastólica
+                  if (typeof ta === 'object' && ta.frecuenciaSistolica !== undefined && ta.frecuenciaDiastolica !== undefined) {
+                    return `${Math.round(ta.frecuenciaSistolica)}/${Math.round(ta.frecuenciaDiastolica)}`;
+                  }
+                  
+                  // Si es string directo (formato "120/80")
+                  if (typeof ta === 'string') {
+                    return ta;
+                  }
+                  
+                  return 'N/A';
+                })()}
+              </td>
+              <td>{ingreso.enfermera?.apellido || ingreso.enfermera?.nombre || 'N/A'}</td>
             </tr>
           ))}
         </tbody>

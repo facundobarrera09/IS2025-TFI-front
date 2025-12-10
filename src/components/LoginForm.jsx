@@ -135,6 +135,26 @@ export default function LoginForm({ onSubmit, onCambiarARegistro }) {
         paddingTop: '20px',
         borderTop: '1px solid #4a5568'
       }}>
+        <p style={{ color: '#718096', fontSize: '0.9rem', margin: '0 0 10px 0' }}>
+          ¿No tienes una cuenta?
+        </p>
+        <button
+          type="button"
+          onClick={onCambiarARegistro}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: '#ef4444',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            marginBottom: '20px'
+          }}
+        >
+          Registro no disponible (usar usuarios de prueba)
+        </button>
+
         <div style={{
           background: '#1a202c',
           padding: '15px',
@@ -143,9 +163,10 @@ export default function LoginForm({ onSubmit, onCambiarARegistro }) {
           color: '#cbd5e0',
           border: '1px solid #4a5568'
         }}>
-          <strong>Médico:</strong> medico@hospital.com<br/>
-          <strong>Enfermera:</strong> enfermera@hospital.com<br/>
-          <strong>Contraseña:</strong> password123
+          <strong>Usuarios de prueba (Backend):</strong><br/>
+          <strong>Médico:</strong> med@mail.com<br/>
+          <strong>Enfermera:</strong> enf@mail.com<br/>
+          <strong>Contraseña:</strong> password
         </div>
       </div>
     </div>

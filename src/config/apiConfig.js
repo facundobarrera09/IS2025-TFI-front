@@ -6,38 +6,38 @@
  */
 
 // ⚙️ CONFIGURACIÓN PRINCIPAL
-export const USE_BACKEND = false; // Cambiar a true cuando el backend esté listo
+export const USE_BACKEND = true; // Cambiar a true cuando el backend esté listo
 
 // 🌐 URL BASE DEL BACKEND
 export const API_BASE_URL = "http://localhost:8080";
 
-// 📋 ENDPOINTS DEL BACKEND
+// 📋 ENDPOINTS DEL BACKEND (Rutas reales del backend)
 export const API_ENDPOINTS = {
   // Autenticación
   AUTH: {
-    LOGIN: "/auth/login",
-    REGISTRO: "/auth/registro",
-  },
-
-  // Pacientes
-  PACIENTES: {
-    BASE: "/pacientes",
-    BY_CUIT: (cuit) => `/pacientes/cuit/${cuit}`,
+    LOGIN: "/login",
+    // No hay registro en el backend actual
   },
 
   // Ingresos (Urgencias)
   INGRESOS: {
     BASE: "/ingresos",
     RECLAMAR: "/ingresos/reclamar",
-    PENDIENTES: "/ingresos/pendientes",
+    INFORME: "/ingresos/informe",
   },
 
-  // Atenciones
+  // Pacientes - No implementado en backend actual
+  PACIENTES: {
+    BASE: "/pacientes",
+    BY_CUIT: (cuit) => `/pacientes/cuit/${cuit}`,
+  },
+
+  // Atenciones - No implementado en backend actual
   ATENCIONES: {
     BASE: "/atenciones",
   },
 
-  // Obras Sociales
+  // Obras Sociales - No implementado en backend actual
   OBRAS_SOCIALES: {
     BASE: "/obras-sociales",
   },

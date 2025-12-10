@@ -46,7 +46,12 @@ export const mockAuthService = {
   login: async (email, password) => {
     await delay(800);
     
-    const usuario = USUARIOS_MOCK.find(u => u.email === email);
+    // Buscar en usuarios mock y en localStorage
+    let usuarios = [...USUARIOS_MOCK];
+    const usuariosGuardados = JSON.parse(localStorage.getItem('mock_usuarios') || '[]');
+    usuarios = usuarios.concat(usuariosGuardados);
+    
+    const usuario = usuarios.find(u => u.email === email);
     
     if (!usuario || usuario.password !== password) {
       return errorResponse("Usuario o contraseña inválidos");
@@ -61,6 +66,45 @@ export const mockAuthService = {
     return successResponse({
       token,
       usuario: usuarioSinPassword
+    });
+  },
+
+  registro: async (data) => {
+    await delay(1000);
+    
+    // Obtener usuarios existentes
+    let usuarios = [...USUARIOS_MOCK];
+    const usuariosGuardados = JSON.parse(localStorage.getItem('mock_usuarios') || '[]');
+    usuarios = usuarios.concat(usuariosGuardados);
+    
+    // Verificar si el email ya existe
+    if (usuarios.some(u => u.email === data.email)) {
+      return errorResponse("Ya existe un usuario con ese email");
+    }
+    
+    // Crear nuevo usuario
+    const nuevoUsuario = {
+      uuid: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      email: data.email,
+      password: data.password, // En producción esto estaría hasheado
+      autoridad: data.autoridad,
+      fechaRegistro: new Date().toISOString()
+    };
+    
+    // Guardar en localStorage
+    usuariosGuardados.push(nuevoUsuario);
+    localStorage.setItem('mock_usuarios', JSON.stringify(usuariosGuardados));
+    
+    // Generar token mock para login automático
+    const token = `mock-token-${Date.now()}`;
+    
+    // Retornar éxito sin datos sensibles
+    const { password: _, ...usuarioSinPassword } = nuevoUsuario;
+    
+    return successResponse({
+      token,
+      usuario: usuarioSinPassword,
+      mensaje: "Usuario registrado exitosamente"
     });
   }
 };

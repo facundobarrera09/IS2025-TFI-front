@@ -1,40 +1,51 @@
 import { api } from "./api";
-import { mockAuthService } from "../../mock/mockBackend";
-import { USE_BACKEND } from "../../config/apiConfig";
 
 export const authService = {
   /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/registro-usuario").RegistroUsuarioDTO, import("../../models/dto/registro-usuario").AuthResponse>} */
-  registro: async (data) => {
-    if (!USE_BACKEND) {
-      return mockAuthService.registro(data);
-    }
-
-    // Remover confirmPassword antes de enviar al backend
-    const { confirmPassword, ...dataToSend } = data;
-
-    // Mapear 'password' a 'contraseña' para el backend
-    const backendData = {
-      email: dataToSend.email,
-      contraseña: dataToSend.password,
-      autoridad: dataToSend.autoridad,
+  registro: async () => {
+    // El backend actual no tiene endpoint de registro
+    return {
+      success: false,
+      error: {
+        context: {
+          message: "Registro no disponible. Use usuarios de prueba existentes."
+        }
+      }
     };
-
-    return api.post("/auth/registro", backendData);
   },
 
   /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/registro-usuario").LoginDTO, import("../../models/dto/registro-usuario").AuthResponse>} */
   login: async (data) => {
-    if (!USE_BACKEND) {
-      return mockAuthService.login(data.email, data.password);
-    }
-
     // Mapear 'password' a 'contraseña' para el backend
     const backendData = {
       email: data.email,
       contraseña: data.password,
     };
-
-    return api.post("/auth/login", backendData);
+    
+    const response = await api.post("/login", backendData);
+    
+    // El backend devuelve { token: "..." }, necesitamos crear el usuario
+    if (response.success && response.result && response.result.token) {
+      // Determinar autoridad basado en el email (backend usa ENFERMERO, no ENFERMERA)
+      let autoridad = "MEDICO";
+      if (data.email.includes("enf")) {
+        autoridad = "ENFERMERO"; // Backend usa ENFERMERO
+      }
+      
+      return {
+        success: true,
+        result: {
+          token: response.result.token,
+          usuario: {
+            email: data.email,
+            autoridad: autoridad,
+            uuid: `user-${Date.now()}`
+          }
+        }
+      };
+    }
+    
+    return response;
   },
 
   /** @type {() => void} */
