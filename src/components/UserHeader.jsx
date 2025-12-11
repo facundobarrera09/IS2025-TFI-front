@@ -7,7 +7,9 @@ export default function UserHeader() {
   if (!usuario) return null;
 
   const getRolTexto = (autoridad) => {
-    return autoridad === 'MEDICO' ? 'Médico' : 'Enfermera';
+    if (autoridad === 'MEDICO') return 'Médico';
+    if (autoridad === 'ENFERMERA' || autoridad === 'ENFERMERO') return 'Enfermera';
+    return autoridad;
   };
 
   return (

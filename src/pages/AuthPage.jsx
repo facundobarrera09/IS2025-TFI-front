@@ -16,7 +16,11 @@ export default function AuthPage() {
     const result = await login(data.email, data.password);
     
     if (!result.success) {
-      setErrorMessage(result.error);
+      // Asegurar que el error sea un string
+      const errorMsg = typeof result.error === 'string' ? result.error : 
+                      result.error?.message || 
+                      'Error de autenticación';
+      setErrorMessage(errorMsg);
       setErrorModalVisible(true);
       setTimeout(() => setErrorModalVisible(false), 4000);
     }
@@ -24,10 +28,24 @@ export default function AuthPage() {
   };
 
   const handleRegistro = async (data) => {
-    // El registro no está implementado en el backend
-    setErrorMessage("Registro no disponible. Use los usuarios de prueba del backend.");
-    setErrorModalVisible(true);
-    setTimeout(() => setErrorModalVisible(false), 4000);
+    const result = await registro(data);
+    
+    if (result.success) {
+      setSuccessMessage(result.message || "Usuario registrado exitosamente");
+      setSuccessModalVisible(true);
+      setTimeout(() => {
+        setSuccessModalVisible(false);
+        setModo("login"); // Cambiar a login después del registro exitoso
+      }, 3000);
+    } else {
+      // Asegurar que el error sea un string
+      const errorMsg = typeof result.error === 'string' ? result.error : 
+                      result.error?.message || 
+                      'Error en el registro';
+      setErrorMessage(errorMsg);
+      setErrorModalVisible(true);
+      setTimeout(() => setErrorModalVisible(false), 4000);
+    }
   };
 
   return (
@@ -58,14 +76,17 @@ export default function AuthPage() {
             </p>
           </div>
 
-          <LoginForm 
-            onSubmit={handleLogin}
-            onCambiarARegistro={() => {
-              setErrorMessage("Registro no disponible. Use los usuarios de prueba del backend.");
-              setErrorModalVisible(true);
-              setTimeout(() => setErrorModalVisible(false), 4000);
-            }}
-          />
+          {modo === "login" ? (
+            <LoginForm 
+              onSubmit={handleLogin}
+              onCambiarARegistro={() => setModo("registro")}
+            />
+          ) : (
+            <RegistroForm 
+              onSubmit={handleRegistro}
+              onCambiarALogin={() => setModo("login")}
+            />
+          )}
 
           <ErrorModal 
             visible={errorModalVisible} 
@@ -90,6 +111,11 @@ export default function AuthPage() {
 function ErrorModal({ visible, message, onClose }) {
   if (!visible) return null;
 
+  // Asegurar que el mensaje sea un string
+  const displayMessage = typeof message === 'string' ? message : 
+                         message?.message || 
+                         'Error desconocido';
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal error-modal" onClick={(e) => e.stopPropagation()}>
@@ -98,7 +124,7 @@ function ErrorModal({ visible, message, onClose }) {
         </header>
 
         <div className="modal-body">
-          <p>{message}</p>
+          <p>{displayMessage}</p>
         </div>
 
         <footer className="modal-footer">

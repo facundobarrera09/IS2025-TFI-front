@@ -4,15 +4,44 @@
 
 class ObrasSocialesService {
   async getObrasSociales() {
-    // El backend actual no tiene endpoint de obras sociales
-    return {
-      success: false,
-      error: {
-        context: {
-          message: "Endpoint de obras sociales no implementado en el backend"
+    // Datos mock temporales hasta que se implemente el endpoint en el backend
+    const obrasSocialesMock = [
+      "OSDE",
+      "Swiss Medical",
+      "Galeno",
+      "Medicus",
+      "IOMA",
+      "PAMI",
+      "Obra Social Unión Personal",
+      "OSECAC",
+      "OSPRERA",
+      "OSPLAD",
+      "OSDEPYM",
+      "OSUTHGRA",
+      "OSPATCA",
+      "OSPJN"
+    ];
+
+    try {
+      // Simular delay de red
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      return {
+        success: true,
+        result: {
+          obrasSociales: obrasSocialesMock
         }
-      }
-    };
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          context: {
+            message: "Error al obtener obras sociales"
+          }
+        }
+      };
+    }
   }
 }
 

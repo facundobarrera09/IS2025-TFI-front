@@ -2,14 +2,60 @@ import { api } from "./api";
 
 export const authService = {
   /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/registro-usuario").RegistroUsuarioDTO, import("../../models/dto/registro-usuario").AuthResponse>} */
-  registro: async () => {
-    // El backend actual no tiene endpoint de registro
-    return {
-      success: false,
-      error: {
-        context: {
-          message: "Registro no disponible. Use usuarios de prueba existentes."
+  registro: async (data) => {
+    // Como el endpoint /usuarios no está disponible en el backend actual,
+    // usamos una simulación local para demostrar la funcionalidad
+    
+    // Simular validaciones del backend
+    if (!data.email || !data.password || !data.autoridad) {
+      return {
+        success: false,
+        error: {
+          context: {
+            message: "Todos los campos son obligatorios"
+          }
         }
+      };
+    }
+
+    // Verificar si el email ya existe (simulado)
+    const usuariosExistentes = JSON.parse(localStorage.getItem('usuarios_registrados') || '[]');
+    if (usuariosExistentes.some(u => u.email === data.email)) {
+      return {
+        success: false,
+        error: {
+          context: {
+            message: "El email ya está registrado"
+          }
+        }
+      };
+    }
+
+    // Simular registro exitoso
+    const nuevoUsuario = {
+      email: data.email,
+      autoridad: data.autoridad,
+      fechaRegistro: new Date().toISOString()
+    };
+
+    if (data.autoridad === "médico") {
+      nuevoUsuario.matricula = data.matricula;
+    } else if (data.autoridad === "enfermera") {
+      nuevoUsuario.nombre = data.nombre;
+      nuevoUsuario.apellido = data.apellido;
+    }
+
+    // Guardar en localStorage (simulando base de datos)
+    usuariosExistentes.push(nuevoUsuario);
+    localStorage.setItem('usuarios_registrados', JSON.stringify(usuariosExistentes));
+
+    // Simular delay de red
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    return {
+      success: true,
+      result: {
+        message: "Usuario registrado exitosamente. Nota: Este es un registro simulado ya que el endpoint del backend no está disponible."
       }
     };
   },

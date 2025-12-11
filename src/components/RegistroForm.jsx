@@ -6,7 +6,12 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
     email: "",
     password: "",
     confirmPassword: "",
-    autoridad: ""
+    autoridad: "",
+    // Campos específicos para médico
+    matricula: "",
+    // Campos específicos para enfermera
+    nombre: "",
+    apellido: ""
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -98,8 +103,8 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
             className={errors['autoridad'] ? 'input-error' : ''}
           >
             <option value="">Seleccione su rol (*)</option>
-            <option value="MEDICO">Médico</option>
-            <option value="ENFERMERA">Enfermera</option>
+            <option value="médico">Médico</option>
+            <option value="enfermera">Enfermera</option>
           </select>
           {errors['autoridad'] && <div className="field-error">{errors['autoridad']}</div>}
         </div>
@@ -131,6 +136,61 @@ export default function RegistroForm({ onSubmit, onCambiarALogin }) {
             autoComplete="new-password"
           />
           {errors['confirmPassword'] && <div className="field-error">{errors['confirmPassword']}</div>}
+        </div>
+
+        {/* Campos específicos para médico */}
+        {form.autoridad === "médico" && (
+          <div>
+            <input
+              type="text"
+              name="matricula"
+              placeholder="Matrícula Profesional (*)"
+              value={form.matricula}
+              onChange={handleChange}
+              className={errors['matricula'] ? 'input-error' : ''}
+            />
+            {errors['matricula'] && <div className="field-error">{errors['matricula']}</div>}
+          </div>
+        )}
+
+        {/* Campos específicos para enfermera */}
+        {form.autoridad === "enfermera" && (
+          <>
+            <div>
+              <input
+                type="text"
+                name="nombre"
+                placeholder="Nombre (*)"
+                value={form.nombre}
+                onChange={handleChange}
+                className={errors['nombre'] ? 'input-error' : ''}
+              />
+              {errors['nombre'] && <div className="field-error">{errors['nombre']}</div>}
+            </div>
+            <div>
+              <input
+                type="text"
+                name="apellido"
+                placeholder="Apellido (*)"
+                value={form.apellido}
+                onChange={handleChange}
+                className={errors['apellido'] ? 'input-error' : ''}
+              />
+              {errors['apellido'] && <div className="field-error">{errors['apellido']}</div>}
+            </div>
+          </>
+        )}
+
+        <div style={{
+          background: '#1a202c',
+          padding: '12px',
+          borderRadius: '8px',
+          fontSize: '0.85rem',
+          color: '#cbd5e0',
+          border: '1px solid #4a5568',
+          marginBottom: '15px'
+        }}>
+          <strong>Nota:</strong> Esta es una demostración del registro. Los datos se guardan localmente ya que el endpoint del backend no está disponible actualmente.
         </div>
 
         <div style={{

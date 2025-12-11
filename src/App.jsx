@@ -17,7 +17,7 @@ function AppContent() {
     if (usuario && !modulo) {
       if (usuario.autoridad === 'MEDICO') {
         setModulo("reclamo");
-      } else if (usuario.autoridad === 'ENFERMERA') {
+      } else if (usuario.autoridad === 'ENFERMERA' || usuario.autoridad === 'ENFERMERO') {
         setModulo("pacientes");
       }
     }
@@ -31,7 +31,7 @@ function AppContent() {
       return ['reclamo'].includes(moduloNombre);
     }
     
-    if (usuario.autoridad === 'ENFERMERA') {
+    if (usuario.autoridad === 'ENFERMERA' || usuario.autoridad === 'ENFERMERO') {
       return ['pacientes', 'urgencias'].includes(moduloNombre);
     }
     

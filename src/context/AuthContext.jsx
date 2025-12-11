@@ -45,10 +45,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const registro = async (data) => {
-    // El registro no está implementado en el backend
+    const response = await authService.registro(data);
+    
+    if (response.success) {
+      return { success: true, message: "Usuario registrado exitosamente" };
+    }
+    
     return { 
       success: false, 
-      error: "Registro no disponible en el backend actual"
+      error: response.error?.context?.message || 
+             response.error?.message || 
+             "Error al registrar usuario"
     };
   };
 

@@ -16,7 +16,7 @@ export const API_ENDPOINTS = {
   // Autenticación
   AUTH: {
     LOGIN: "/login",
-    // No hay registro en el backend actual
+    // REGISTRO: "/usuarios", // Endpoint no disponible en backend actual
   },
 
   // Ingresos (Urgencias)
