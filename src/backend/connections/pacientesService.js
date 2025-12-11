@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { apiWithAuth } from "./api";
 import { mockPacientesService } from "../../mock/mockBackend";
 import { USE_BACKEND } from "../../config/apiConfig";
 
@@ -44,7 +44,7 @@ export const pacientesService = {
       // Extraer pacientes únicos de los ingresos
       const pacientesMap = new Map();
       
-      console.log('🔍 Estructura de respuesta del backend:', JSON.stringify(ingresosResponse.result, null, 2));
+      // console.log('🔍 Estructura de respuesta del backend:', JSON.stringify(ingresosResponse.result, null, 2));
       
       // El backend devuelve { fechaDeConsulta, listaDeIngresos }
       if (ingresosResponse.result && ingresosResponse.result.listaDeIngresos) {
@@ -89,6 +89,16 @@ export const pacientesService = {
       const pacientes = Array.from(pacientesMap.values());
       console.log('✅ Pacientes finales extraídos:', pacientes);
       
+      const response = await apiWithAuth.get(`/pacientes`)
+
+      if (response.success) {
+        console.log('pacientes encontrados')
+        return {
+          success: true,
+          result: response.result
+        }
+      }
+
       return {
         success: true,
         result: pacientes
@@ -108,24 +118,22 @@ export const pacientesService = {
 
   /** @type {import("../../models/service.schema").ServiceFunction<string, any>} */
   getPacienteByCuit: async (cuit) => {
-    // NOTA: El backend no tiene endpoint específico para buscar pacientes por CUIT.
-    // El backend maneja esto automáticamente en el endpoint de ingresos.
-    // Siempre retornamos "no encontrado" para que se muestre el formulario.
+    console.log(`🔍 Solicitando paciente con CUIT: ${cuit} desde el backend...`);
     
     try {
-      // Simular delay de red
-      await new Promise(resolve => setTimeout(resolve, 300));
+      const response = await apiWithAuth.get(`/pacientes/${cuit}`);
       
-      // Siempre retornar "no encontrado" para que aparezca el formulario de registro
-      return {
-        success: false,
-        error: {
-          context: {
-            message: "El backend maneja la búsqueda/creación de pacientes automáticamente en el registro de ingresos"
-          }
-        }
-      };
+      console.log(`📋 Respuesta del backend para paciente ${cuit}:`, response);
+      
+      if (!response.success) {
+        console.log(`❌ Error al obtener paciente ${cuit}:`, response.error);
+        return response;
+      }
+      
+      console.log(`✅ Paciente encontrado:`, response.result);
+      return response;
     } catch (error) {
+      console.log(`❌ Error en getPacienteByCuit para CUIT ${cuit}:`, error);
       return {
         success: false,
         error: {

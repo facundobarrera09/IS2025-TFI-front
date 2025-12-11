@@ -14,9 +14,12 @@ export const urgenciasService = {
     console.log('Datos recibidos para crear ingreso:', data);
     
     // Mapear los datos al formato exacto que espera el backend
+    // Remover guiones del CUIT antes de enviarlo al backend
+    const cuitSinGuiones = data.paciente.cuit.replace(/-/g, '');
+    
     const backendData = {
       paciente: {
-        cuit: data.paciente.cuit,
+        cuit: cuitSinGuiones,
         apellido: data.paciente.apellido,
         nombre: data.paciente.nombre,
         domicilio: {
@@ -51,5 +54,13 @@ export const urgenciasService = {
   reclamarProximoPaciente: () => {
     // El backend usa GET /ingresos/reclamar con Authorization header
     return apiWithAuth.get("/ingresos/reclamar");
+  },
+
+  /** @type {import("../../models/service.schema").ServiceFunction<undefined, any>} */
+  getTodosLosIngresos: async () => {
+    console.log('Solicitando todos los ingresos (incluyendo finalizados) al backend...');
+    const response = await apiWithAuth.get("/ingresos/todos");
+    console.log('Respuesta raw del backend para todos los ingresos:', response);
+    return response;
   },
 };

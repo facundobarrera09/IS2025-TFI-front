@@ -6,6 +6,6 @@ export const atencionesService = {
   /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/crear-atencion").CrearAtencionDTO, null>} */
   crearAtencion: (data) =>
     USE_BACKEND
-      ? api.post("/atenciones", data)
+      ? api.post("/ingresos/informe", data)
       : mockAtencionesService.crearAtencion(data),
 };

@@ -83,29 +83,83 @@ export default function UrgenciasForm({ onSubmit }) {
 
     setBuscandoPaciente(true);
     
-    // El backend no tiene endpoint específico para buscar pacientes.
-    // El backend maneja automáticamente la búsqueda/creación cuando se registra el ingreso.
-    // Por eso siempre mostramos el formulario para que el usuario complete los datos.
-    
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simular búsqueda
-    setBuscandoPaciente(false);
-    
-    // Siempre mostrar el formulario de registro ya que el backend se encarga de todo
-    setPacienteEncontrado(null);
-    setForm(prev => ({
-      ...prev,
-      paciente: {
-        cuit,
-        apellido: "",
-        nombre: "",
-        domicilio: {
-          calle: "",
-          numero: "",
-          localidad: ""
-        },
-        afiliado: undefined
+    try {
+      // Llamar al servicio para buscar el paciente en el backend
+      // Enviar el CUIT sin guiones al backend
+      const response = await pacientesService.getPacienteByCuit(cuitSinGuiones);
+      
+      if (response.success && response.result) {
+        // Paciente encontrado - mapear los datos del backend al formato del frontend
+        const pacienteBackend = response.result;
+        const pacienteEncontrado = {
+          cuit: pacienteBackend.cuit || cuit,
+          nombre: pacienteBackend.nombre || "",
+          apellido: pacienteBackend.apellido || "",
+          domicilio: pacienteBackend.domicilio ? {
+            calle: pacienteBackend.domicilio.calle || "",
+            numero: pacienteBackend.domicilio.numero || "",
+            localidad: pacienteBackend.domicilio.localidad || ""
+          } : {
+            calle: "",
+            numero: "",
+            localidad: ""
+          },
+          afiliado: pacienteBackend.afiliacion ? {
+            obraSocial: {
+              nombre: pacienteBackend.afiliacion.obraSocial?.nombre || ""
+            },
+            numeroAfiliado: pacienteBackend.afiliacion.numeroAfiliado || ""
+          } : undefined
+        };
+        
+        setPacienteEncontrado(pacienteEncontrado);
+        
+        // Actualizar el formulario con los datos del paciente encontrado
+        setForm(prev => ({
+          ...prev,
+          paciente: {
+            ...pacienteEncontrado,
+            cuit: cuit // Mantener el formato con guiones
+          }
+        }));
+      } else {
+        // Paciente no encontrado - mostrar formulario para registro
+        setPacienteEncontrado(null);
+        setForm(prev => ({
+          ...prev,
+          paciente: {
+            cuit,
+            apellido: "",
+            nombre: "",
+            domicilio: {
+              calle: "",
+              numero: "",
+              localidad: ""
+            },
+            afiliado: undefined
+          }
+        }));
       }
-    }));
+    } catch (error) {
+      console.error('Error al buscar paciente:', error);
+      setPacienteEncontrado(null);
+      setForm(prev => ({
+        ...prev,
+        paciente: {
+          cuit,
+          apellido: "",
+          nombre: "",
+          domicilio: {
+            calle: "",
+            numero: "",
+            localidad: ""
+          },
+          afiliado: undefined
+        }
+      }));
+    } finally {
+      setBuscandoPaciente(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -288,7 +342,7 @@ export default function UrgenciasForm({ onSubmit }) {
                         <PacienteRegistroFormWrapper 
                           cuit={form.paciente.cuit}
                           onPacienteDataChange={(pacienteData) => {
-                            console.log('🎯 UrgenciasForm: Recibiendo datos del paciente:', pacienteData);
+                            // console.log('🎯 UrgenciasForm: Recibiendo datos del paciente:', pacienteData);
                             
                             // Actualizar el formulario con los datos del paciente en tiempo real
                             setForm(prev => {
@@ -300,7 +354,7 @@ export default function UrgenciasForm({ onSubmit }) {
                                   cuit: prev.paciente.cuit // Mantener el CUIT original
                                 }
                               };
-                              console.log('🎯 UrgenciasForm: Formulario actualizado:', nuevoForm);
+                              // console.log('🎯 UrgenciasForm: Formulario actualizado:', nuevoForm);
                               return nuevoForm;
                             });
                           }}

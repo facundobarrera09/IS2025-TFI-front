@@ -45,22 +45,26 @@ export default function UrgenciasPage() {
   };
 
   const fetchIngresos = async () => {
-    const response = await urgenciasService.getIngresos();
+    // Para la lista de espera, usar el endpoint que devuelve solo pendientes
+    const responseListaEspera = await urgenciasService.getIngresos();
+    
+    // Para los finalizados, usar el endpoint que devuelve todos los ingresos
+    const responseTodos = await urgenciasService.getTodosLosIngresos();
 
-    if (response.success) {
-      console.log('Respuesta completa del backend:', response.result);
+    if (responseListaEspera.success) {
+      console.log('Respuesta completa del backend para lista de espera:', responseListaEspera.result);
       
-      let todosIngresos = [];
+      let ingresosPendientes = [];
       
       // Manejar diferentes formatos de respuesta del backend
-      if (response.result) {
-        if (response.result.listaDeIngresos) {
+      if (responseListaEspera.result) {
+        if (responseListaEspera.result.listaDeIngresos) {
           // Formato: { listaDeIngresos: PriorityQueue }
-          const listaDeIngresos = response.result.listaDeIngresos;
+          const listaDeIngresos = responseListaEspera.result.listaDeIngresos;
           console.log('Lista de ingresos raw:', listaDeIngresos);
           
           if (Array.isArray(listaDeIngresos)) {
-            todosIngresos = listaDeIngresos;
+            ingresosPendientes = listaDeIngresos;
           } else if (listaDeIngresos && typeof listaDeIngresos === 'object') {
             // PriorityQueue se serializa de diferentes maneras
             // Intentar convertir a array
@@ -68,47 +72,48 @@ export default function UrgenciasPage() {
               // Si tiene propiedades numéricas (índices)
               const keys = Object.keys(listaDeIngresos);
               if (keys.length > 0 && keys.every(key => !isNaN(key))) {
-                todosIngresos = Object.values(listaDeIngresos);
+                ingresosPendientes = Object.values(listaDeIngresos);
               } else {
                 // Buscar propiedades que contengan arrays o elementos válidos
-                todosIngresos = Object.values(listaDeIngresos).filter(item => 
+                ingresosPendientes = Object.values(listaDeIngresos).filter(item => 
                   item && typeof item === 'object' && item.paciente
                 );
               }
             } catch (e) {
               console.warn('Error procesando PriorityQueue:', e);
-              todosIngresos = [];
+              ingresosPendientes = [];
             }
           }
-        } else if (Array.isArray(response.result)) {
+        } else if (Array.isArray(responseListaEspera.result)) {
           // Formato directo: Array de ingresos
-          todosIngresos = response.result;
-        } else if (response.result.paciente) {
+          ingresosPendientes = responseListaEspera.result;
+        } else if (responseListaEspera.result.paciente) {
           // Formato: Un solo ingreso
-          todosIngresos = [response.result];
+          ingresosPendientes = [responseListaEspera.result];
         }
       }
       
-      console.log('Ingresos procesados:', todosIngresos);
-      console.log('Cantidad de ingresos:', todosIngresos.length);
+      console.log('Ingresos pendientes procesados:', ingresosPendientes);
+      setIngresos(ingresosPendientes);
+    } else {
+      setIngresos([]);
+      console.log("Error al obtener los ingresos pendientes:", responseListaEspera.error);
+    }
+
+    // Procesar todos los ingresos para obtener los finalizados
+    if (responseTodos.success && Array.isArray(responseTodos.result)) {
+      console.log('Todos los ingresos recibidos:', responseTodos.result);
       
-      // Filtrar por estado usando los enums del backend
-      const pendientes = todosIngresos.filter(ing => 
-        !ing.estado || ing.estado === 'PENDIENTE'
-      );
-      const finalizados = todosIngresos.filter(ing => 
+      // Filtrar solo los finalizados
+      const finalizados = responseTodos.result.filter(ing => 
         ing.estado === 'FINALIZADO'
       );
       
-      console.log('Pendientes filtrados:', pendientes.length);
       console.log('Finalizados filtrados:', finalizados.length);
-      
-      setIngresos(pendientes);
       setIngresosFinalizados(finalizados);
     } else {
-      setIngresos([]);
       setIngresosFinalizados([]);
-      console.log("Error al obtener los ingresos:", response.error);
+      console.log("Error al obtener todos los ingresos:", responseTodos.error);
     }
   };
 
@@ -167,7 +172,7 @@ export default function UrgenciasPage() {
         {tab === "list" && <UrgenciasTable data={ingresos} />}
         {tab === "finalizados" && (
           <>
-            <div style={{ 
+            {/*<div style={{ 
               padding: '15px', 
               background: '#fef3c7', 
               border: '1px solid #fbbf24',
@@ -177,7 +182,7 @@ export default function UrgenciasPage() {
               fontSize: '0.9rem'
             }}>
               <strong>Nota:</strong> A modo de demostrar que cambia el estado, implementamos esto.
-            </div>
+            </div>*/}
             <UrgenciasTable data={ingresosFinalizados} />
           </>
         )}
@@ -186,3 +191,4 @@ export default function UrgenciasPage() {
     </div>
   );
 }
+
