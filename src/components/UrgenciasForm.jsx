@@ -21,8 +21,8 @@ export default function UrgenciasForm({ onSubmit }) {
   const initialForm = {
     paciente: {
       cuit: "",
-      apellido: undefined,
-      nombre: undefined,
+      apellido: "",
+      nombre: "",
       domicilio: {
         calle: "",
         numero: "",
@@ -47,11 +47,11 @@ export default function UrgenciasForm({ onSubmit }) {
   const [buscandoPaciente, setBuscandoPaciente] = useState(false);
 
   const niveles = [
-    "Critica - Rojo",
-    "Emergencia - Naranja", 
-    "Urgencia - Amarillo",
-    "Urgencia Menor - Verde",
-    "Sin Urgencia - Azul",
+    "Critica",
+    "Emergencia", 
+    "Urgencia",
+    "Urgencia Menor",
+    "Sin Urgencia",
   ];
 
   // Función para formatear CUIT automáticamente
@@ -82,18 +82,22 @@ export default function UrgenciasForm({ onSubmit }) {
     }
 
     setBuscandoPaciente(true);
-    const response = await pacientesService.getPacienteByCuit(cuit);
+    
+    // El backend no tiene endpoint específico para buscar pacientes.
+    // El backend maneja automáticamente la búsqueda/creación cuando se registra el ingreso.
+    // Por eso siempre mostramos el formulario para que el usuario complete los datos.
+    
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simular búsqueda
     setBuscandoPaciente(false);
-
-    // Como el backend no tiene endpoint de pacientes, siempre será false
-    // Permitir que el usuario complete manualmente los datos
+    
+    // Siempre mostrar el formulario de registro ya que el backend se encarga de todo
     setPacienteEncontrado(null);
     setForm(prev => ({
       ...prev,
       paciente: {
         cuit,
-        apellido: undefined,
-        nombre: undefined,
+        apellido: "",
+        nombre: "",
         domicilio: {
           calle: "",
           numero: "",
@@ -150,8 +154,9 @@ export default function UrgenciasForm({ onSubmit }) {
   const submit = async (e) => {
     e.preventDefault();
 
-    console.log('Formulario enviado:', form);
-    console.log('Formulario JSON:', JSON.stringify(form, null, 2));
+    console.log('🚀 UrgenciasForm SUBMIT: Formulario enviado:', form);
+    console.log('🚀 UrgenciasForm SUBMIT: Formulario JSON:', JSON.stringify(form, null, 2));
+    console.log('🚀 UrgenciasForm SUBMIT: Paciente encontrado:', pacienteEncontrado);
 
     const result = CrearIngreso.safeParse(form);
 
@@ -259,7 +264,7 @@ export default function UrgenciasForm({ onSubmit }) {
                         </Form.Control.Feedback>
                         {buscandoPaciente && (
                           <Form.Text style={{ color: '#718096' }}>
-                            Buscando paciente...
+                            Verificando CUIT...
                           </Form.Text>
                         )}
                       </Form.Group>
@@ -282,15 +287,25 @@ export default function UrgenciasForm({ onSubmit }) {
                       {!pacienteEncontrado && form.paciente.cuit && !buscandoPaciente && form.paciente.cuit.replace(/-/g, '').length >= 11 && (
                         <PacienteRegistroFormWrapper 
                           cuit={form.paciente.cuit}
+                          onPacienteDataChange={(pacienteData) => {
+                            console.log('🎯 UrgenciasForm: Recibiendo datos del paciente:', pacienteData);
+                            
+                            // Actualizar el formulario con los datos del paciente en tiempo real
+                            setForm(prev => {
+                              const nuevoForm = {
+                                ...prev,
+                                paciente: {
+                                  ...prev.paciente,
+                                  ...pacienteData,
+                                  cuit: prev.paciente.cuit // Mantener el CUIT original
+                                }
+                              };
+                              console.log('🎯 UrgenciasForm: Formulario actualizado:', nuevoForm);
+                              return nuevoForm;
+                            });
+                          }}
                           onPacienteCreado={(pacienteData) => {
-                            // Actualizar el formulario con los datos del paciente creado
-                            setForm(prev => ({
-                              ...prev,
-                              paciente: {
-                                ...prev.paciente,
-                                ...pacienteData
-                              }
-                            }));
+                            console.log('🎯 UrgenciasForm: Paciente completado:', pacienteData);
                             setPacienteEncontrado(pacienteData);
                           }}
                         />
@@ -344,7 +359,7 @@ export default function UrgenciasForm({ onSubmit }) {
                         >
                           <option value="" style={{ background: '#2d3748' }}>Seleccione nivel de emergencia</option>
                           {niveles.map((n) => (
-                            <option key={n} value={n.split(' - ')[0]} style={{ background: '#2d3748', padding: '8px' }}>
+                            <option key={n} value={n} style={{ background: '#2d3748', padding: '8px' }}>
                               {n}
                             </option>
                           ))}
@@ -493,54 +508,34 @@ export default function UrgenciasForm({ onSubmit }) {
 }
 
 // Componente wrapper para usar PacientesForm en el contexto de urgencias
-function PacienteRegistroFormWrapper({ cuit, onPacienteCreado }) {
-  const [showForm, setShowForm] = useState(false);
+function PacienteRegistroFormWrapper({ cuit, onPacienteDataChange, onPacienteCreado }) {
+  const [showForm, setShowForm] = useState(true); // Mostrar directamente el formulario
 
   const handlePacienteSubmit = async (pacienteData) => {
+    console.log('🏥 PacienteRegistroFormWrapper: Datos recibidos del PacientesForm:', pacienteData);
+    
     // Agregar el CUIT al paciente
     const pacienteConCuit = {
       ...pacienteData,
       cuit: cuit
     };
 
-    // Registrar el paciente
+    console.log('🏥 PacienteRegistroFormWrapper: Datos con CUIT agregado:', pacienteConCuit);
+
+    // Registrar el paciente temporalmente en el frontend
+    // El backend se encargará de buscar/crear cuando se envíe el ingreso
     const response = await pacientesService.crearPaciente(pacienteConCuit);
     
     if (response.success) {
-      // Notificar al componente padre que el paciente fue creado
+      console.log('✅ PacienteRegistroFormWrapper: Notificando al padre con datos:', pacienteConCuit);
+      // Notificar al componente padre que el paciente fue completado
       onPacienteCreado(pacienteConCuit);
-      setShowForm(false);
       return true;
     } else {
-      console.error("Error al crear paciente:", response.error);
+      console.error("❌ PacienteRegistroFormWrapper: Error al procesar paciente:", response.error);
       return false;
     }
   };
-
-  if (!showForm) {
-    return (
-      <Alert style={{ background: '#4a5568', border: '1px solid #718096', color: '#e2e8f0' }} className="mb-3">
-        <div className="d-flex align-items-center justify-content-between">
-          <div>
-            <strong>Paciente no encontrado</strong>
-            <div className="small">El paciente con CUIT {cuit} no está registrado.</div>
-          </div>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setShowForm(true)}
-            style={{
-              background: '#3182ce',
-              border: 'none',
-              padding: '8px 16px'
-            }}
-          >
-            Registrar Paciente
-          </Button>
-        </div>
-      </Alert>
-    );
-  }
 
   return (
     <div style={{ 
@@ -550,32 +545,348 @@ function PacienteRegistroFormWrapper({ cuit, onPacienteCreado }) {
       padding: '20px',
       marginBottom: '20px'
     }}>
-      <div className="d-flex align-items-center justify-content-between mb-3">
-        <h6 style={{ color: '#90cdf4', margin: 0 }}>Registrar Nuevo Paciente</h6>
-        <Button
-          variant="outline-secondary"
-          size="sm"
-          onClick={() => setShowForm(false)}
-          style={{
-            color: '#cbd5e0',
-            borderColor: '#4a5568'
-          }}
-        >
-          Cancelar
-        </Button>
+      <div className="mb-3">
+        <h6 style={{ color: '#90cdf4', margin: 0 }}>Datos del Paciente</h6>
       </div>
       
       <Alert variant="info" style={{ background: '#2b6cb0', border: '1px solid #3182ce', color: '#ffffff' }}>
         <small>
-          <strong>CUIT:</strong> {cuit} - Complete los datos del paciente para registrarlo automáticamente.
+          <strong>CUIT:</strong> {cuit} - Complete los datos del paciente. El sistema verificará automáticamente si ya existe al registrar el ingreso.
         </small>
       </Alert>
       
-      <PacientesForm 
+      <PacientesFormFields 
         onSubmit={handlePacienteSubmit}
+        onDataChange={onPacienteDataChange}
         cuitPredefinido={cuit}
       />
     </div>
   );
 }
 
+// Componente de campos de paciente sin form wrapper (para evitar forms anidados)
+function PacientesFormFields({ onSubmit, onDataChange, cuitPredefinido }) {
+  const initialForm = {
+    cuit: cuitPredefinido || "",
+    apellido: "",
+    nombre: "",
+    domicilio: {
+      calle: "",
+      numero: "",
+      localidad: ""
+    },
+    afiliado: undefined
+  };
+
+  const [form, setForm] = useState(initialForm);
+  const [errors, setErrors] = useState({});
+  const [tieneObraSocial, setTieneObraSocial] = useState(false);
+  const [obrasSociales, setObrasSociales] = useState([]);
+
+  // Actualizar el CUIT cuando cambie el prop
+  useEffect(() => {
+    if (cuitPredefinido) {
+      setForm(prev => ({
+        ...prev,
+        cuit: cuitPredefinido
+      }));
+    }
+  }, [cuitPredefinido]);
+
+  // Notificar cambios de datos al componente padre
+  useEffect(() => {
+    if (onDataChange) {
+      onDataChange(form);
+    }
+  }, [form, onDataChange]);
+
+  useEffect(() => {
+    // Obtener obras sociales desde la API
+    const fetchObrasSociales = async () => {
+      const { obrasSocialesService } = await import("../backend/connections/obrasSocialesService");
+      const response = await obrasSocialesService.getObrasSociales();
+      
+      if (response.success) {
+        setObrasSociales(response.result.obrasSociales);
+      } else {
+        console.error("Error al obtener obras sociales:", response.error);
+        setObrasSociales([]);
+      }
+    };
+
+    fetchObrasSociales();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Limpiar errores del campo editado
+    setErrors(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(key => {
+        if (key === name || key.startsWith(name + '.')) {
+          delete updated[key];
+        }
+      });
+      return updated;
+    });
+
+    // Actualizar el formulario según el campo
+    if (name.startsWith('domicilio.')) {
+      const field = name.split('.')[1];
+      setForm(prev => ({
+        ...prev,
+        domicilio: {
+          ...prev.domicilio,
+          [field]: field === 'numero' ? (value ? parseInt(value) : "") : value
+        }
+      }));
+    } else if (name.startsWith('afiliado.')) {
+      if (name === 'afiliado.obraSocial.nombre') {
+        setForm(prev => ({
+          ...prev,
+          afiliado: {
+            ...prev.afiliado,
+            obraSocial: {
+              nombre: value
+            },
+            numeroAfiliado: prev.afiliado?.numeroAfiliado || ""
+          }
+        }));
+      } else if (name === 'afiliado.numeroAfiliado') {
+        setForm(prev => ({
+          ...prev,
+          afiliado: {
+            ...prev.afiliado,
+            obraSocial: prev.afiliado?.obraSocial || { nombre: "" },
+            numeroAfiliado: value
+          }
+        }));
+      }
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleObraSocialToggle = (e) => {
+    const checked = e.target.checked;
+    setTieneObraSocial(checked);
+    
+    if (!checked) {
+      setForm(prev => ({ ...prev, afiliado: undefined }));
+      setErrors(prev => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach(key => {
+          if (key.startsWith('afiliado.')) {
+            delete updated[key];
+          }
+        });
+        return updated;
+      });
+    } else {
+      setForm(prev => ({
+        ...prev,
+        afiliado: {
+          obraSocial: { nombre: "" },
+          numeroAfiliado: ""
+        }
+      }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    const { CrearPacienteSchema } = await import("../models/dto/crear-paciente.schema");
+    const result = CrearPacienteSchema.safeParse(form);
+
+    if (!result.success) {
+      const mapped = {};
+      result.error.issues.forEach((err) => {
+        const key = (err.path && err.path.length) ? err.path.join('.') : '_form';
+        mapped[key] = err.message || 'Valor inválido';
+      });
+      setErrors(mapped);
+      return false;
+    }
+
+    setErrors({});
+
+    try {
+      const success = await onSubmit(form);
+      if (success) {
+        setForm(initialForm);
+        setTieneObraSocial(false);
+      }
+      return success;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  };
+
+  return (
+    <div className="form-modern" style={{ marginTop: '20px' }}>
+      <fieldset className="form-modern">
+        <legend>Datos Personales</legend>
+        
+        <input 
+          name="cuit" 
+          type="text" 
+          placeholder="CUIL/CUIT (*) - Ej: 20-12345678-9" 
+          value={form.cuit}
+          onChange={handleChange}
+          className={errors['cuit'] ? 'input-error' : ''}
+          maxLength={13}
+          readOnly={!!cuitPredefinido}
+          style={cuitPredefinido ? { 
+            backgroundColor: '#4a5568', 
+            color: '#cbd5e0',
+            cursor: 'not-allowed'
+          } : {}}
+        />
+        {errors['cuit'] && <div className="field-error">{errors['cuit']}</div>}
+
+        <div className="grid-2">
+          <div>
+            <input 
+              name="apellido" 
+              type="text" 
+              placeholder="Apellido (*)" 
+              value={form.apellido}
+              onChange={handleChange}
+              className={errors['apellido'] ? 'input-error' : ''}
+            />
+            {errors['apellido'] && <div className="field-error">{errors['apellido']}</div>}
+          </div>
+          <div>
+            <input 
+              name="nombre" 
+              type="text" 
+              placeholder="Nombre (*)" 
+              value={form.nombre}
+              onChange={handleChange}
+              className={errors['nombre'] ? 'input-error' : ''}
+            />
+            {errors['nombre'] && <div className="field-error">{errors['nombre']}</div>}
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset className="form-modern">
+        <legend>Domicilio</legend>
+        <div className="grid-3">
+          <div>
+            <input 
+              name="domicilio.calle" 
+              type="text" 
+              placeholder="Calle (*)" 
+              value={form.domicilio.calle}
+              onChange={handleChange}
+              className={errors['domicilio.calle'] ? 'input-error' : ''}
+            />
+            {errors['domicilio.calle'] && <div className="field-error">{errors['domicilio.calle']}</div>}
+          </div>
+          <div>
+            <input 
+              name="domicilio.numero" 
+              type="number" 
+              placeholder="Número (*)" 
+              value={form.domicilio.numero}
+              onChange={handleChange}
+              className={errors['domicilio.numero'] ? 'input-error' : ''}
+            />
+            {errors['domicilio.numero'] && <div className="field-error">{errors['domicilio.numero']}</div>}
+          </div>
+          <div>
+            <input 
+              name="domicilio.localidad" 
+              type="text" 
+              placeholder="Localidad (*)" 
+              value={form.domicilio.localidad}
+              onChange={handleChange}
+              className={errors['domicilio.localidad'] ? 'input-error' : ''}
+            />
+            {errors['domicilio.localidad'] && <div className="field-error">{errors['domicilio.localidad']}</div>}
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset className="form-modern">
+        <legend>Obra Social (Opcional)</legend>
+        
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', color: '#cbd5e0' }}>
+            <input 
+              type="checkbox" 
+              checked={tieneObraSocial}
+              onChange={handleObraSocialToggle}
+              style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+            />
+            <span style={{ fontWeight: '500' }}>El paciente tiene obra social</span>
+          </label>
+        </div>
+
+        {tieneObraSocial && (
+          <div className="grid-2">
+            <div>
+              <select 
+                name="afiliado.obraSocial.nombre" 
+                value={form.afiliado?.obraSocial?.nombre || ""}
+                onChange={handleChange}
+                className={errors['afiliado.obraSocial.nombre'] ? 'input-error' : ''}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: '#2d3748',
+                  color: '#e2e8f0',
+                  border: '1px solid #4a5568',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="">Seleccione una Obra Social (*)</option>
+                {obrasSociales.map((obra, index) => (
+                  <option key={index} value={obra}>
+                    {obra}
+                  </option>
+                ))}
+              </select>
+              {errors['afiliado.obraSocial.nombre'] && <div className="field-error">{errors['afiliado.obraSocial.nombre']}</div>}
+            </div>
+            <div>
+              <input 
+                name="afiliado.numeroAfiliado" 
+                type="text" 
+                placeholder="Número de Afiliado (*)" 
+                value={form.afiliado?.numeroAfiliado || ""}
+                onChange={handleChange}
+                className={errors['afiliado.numeroAfiliado'] ? 'input-error' : ''}
+              />
+              {errors['afiliado.numeroAfiliado'] && <div className="field-error">{errors['afiliado.numeroAfiliado']}</div>}
+            </div>
+          </div>
+        )}
+      </fieldset>
+
+      <button 
+        type="button"
+        onClick={handleSubmit}
+        style={{
+          width: '100%',
+          padding: '15px',
+          background: '#10b981',
+          color: '#ffffff',
+          border: 'none',
+          borderRadius: '12px',
+          fontSize: '1.05rem',
+          fontWeight: '600',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          marginTop: '20px'
+        }}
+      >
+        Completar Datos del Paciente
+      </button>
+    </div>
+  );
+}

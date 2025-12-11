@@ -28,6 +28,9 @@ export default function UrgenciasPage() {
       return false;
     }
 
+    // Los pacientes se crean automáticamente en el backend cuando se registra el ingreso
+    // No necesitamos hacer nada adicional aquí
+
     // Mostrar modal de éxito
     setModalMessage("Ingreso creado correctamente");
     setModalVisible(true);

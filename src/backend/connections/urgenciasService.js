@@ -10,26 +10,27 @@ export const urgenciasService = {
   },
 
   /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/crear-ingreso.schema").CrearIngresoDTO, null>} */
-  crearIngreso: (data) => {
+  crearIngreso: async (data) => {
     console.log('Datos recibidos para crear ingreso:', data);
     
     // Mapear los datos al formato exacto que espera el backend
     const backendData = {
       paciente: {
         cuit: data.paciente.cuit,
-        apellido: data.paciente.apellido || "Sin apellido",
-        nombre: data.paciente.nombre || "Sin nombre",
+        apellido: data.paciente.apellido,
+        nombre: data.paciente.nombre,
         domicilio: {
-          calle: data.paciente.domicilio?.calle || "Sin dirección",
-          numero: data.paciente.domicilio?.numero || "S/N", 
-          localidad: data.paciente.domicilio?.localidad || "Sin localidad"
+          calle: data.paciente.domicilio.calle,
+          numero: String(data.paciente.domicilio.numero), // Backend espera string
+          localidad: data.paciente.domicilio.localidad
         }
+        // Nota: afiliado no está en el modelo FindOrCreatePaciente del backend
       },
       enfermera: {
         uuid: data.enfermera.uuid
       },
       informe: data.informe,
-      temperatura: data.temperatura ? parseFloat(data.temperatura) : null,
+      temperatura: parseFloat(data.temperatura),
       nivel: data.nivel, // El backend busca por nombre exacto en NivelEmergencia enum
       frecuenciaCardiaca: parseFloat(data.frecuenciaCardiaca),
       frecuenciaRespiratoria: parseFloat(data.frecuenciaRespiratoria),
@@ -39,7 +40,11 @@ export const urgenciasService = {
     console.log('Datos enviados al backend:', JSON.stringify(backendData, null, 2));
     
     // El backend requiere Authorization header y solo acepta ENFERMERO
-    return apiWithAuth.post("/ingresos", backendData);
+    const response = await apiWithAuth.post("/ingresos", backendData);
+    
+    console.log('Respuesta del backend para crear ingreso:', response);
+    
+    return response;
   },
 
   /** @type {import("../../models/service.schema").ServiceFunction<undefined, any>} */

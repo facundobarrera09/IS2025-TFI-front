@@ -6,13 +6,18 @@ export default function PacientesPage() {
   const [pacientes, setPacientes] = useState([]);
 
   const fetchPacientes = async () => {
+    console.log('🏥 PacientesPage: Iniciando fetchPacientes...');
+    
     const response = await pacientesService.getPacientes();
+    
+    console.log('🏥 PacientesPage: Respuesta del servicio:', response);
 
     if (response.success) {
+      console.log('✅ PacientesPage: Pacientes obtenidos:', response.result);
       setPacientes(response.result || []);
     } else {
+      console.log('❌ PacientesPage: Error al obtener pacientes:', response.error);
       setPacientes([]);
-      console.log("Error al obtener los pacientes:", response.error);
     }
   };
 

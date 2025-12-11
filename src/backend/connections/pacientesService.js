@@ -2,70 +2,104 @@ import { api } from "./api";
 import { mockPacientesService } from "../../mock/mockBackend";
 import { USE_BACKEND } from "../../config/apiConfig";
 
-// Almacenamiento temporal en memoria para los pacientes
-let pacientesStorage = [];
+import { urgenciasService } from "./urgenciasService";
 
 export const pacientesService = {
   /** @type {import("../../models/service.schema").ServiceFunction<import("../../models/dto/crear-paciente").CrearPacienteDTO, null>} */
   crearPaciente: async (data) => {
-    try {
-      // Simular delay de red
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Verificar si ya existe un paciente con el mismo CUIT
-      const existePaciente = pacientesStorage.find(p => p.cuit === data.cuit);
-      if (existePaciente) {
-        return {
-          success: false,
-          error: {
-            context: {
-              message: "Ya existe un paciente registrado con ese CUIT"
-            }
-          }
-        };
-      }
-      
-      // Agregar el paciente al almacenamiento
-      const nuevoPaciente = {
-        ...data,
-        id: Date.now(), // ID temporal
-        fechaRegistro: new Date().toISOString()
-      };
-      
-      pacientesStorage.push(nuevoPaciente);
-      
-      return {
-        success: true,
-        result: nuevoPaciente
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          context: {
-            message: "Error al registrar el paciente"
-          }
-        }
-      };
-    }
+    // NOTA: El backend no tiene endpoint específico para crear pacientes.
+    // Los pacientes se crean automáticamente cuando se registra un ingreso de urgencia.
+    // Este método es solo para compatibilidad con el formulario.
+    
+    return {
+      success: true,
+      result: data
+    };
   },
 
   /** @type {import("../../models/service.schema").ServiceFunction<undefined, any>} */
   getPacientes: async () => {
+    // NOTA: El backend no tiene endpoint específico para listar pacientes.
+    // Obtenemos los pacientes extrayéndolos de la lista de ingresos del backend.
+    
+    console.log('🔍 Solicitando pacientes desde el backend...');
+    
     try {
-      // Simular delay de red
-      await new Promise(resolve => setTimeout(resolve, 300));
+      const ingresosResponse = await urgenciasService.getIngresos();
+      
+      console.log('📋 Respuesta de ingresos para pacientes:', ingresosResponse);
+      
+      if (!ingresosResponse.success) {
+        console.log('❌ Error al obtener ingresos:', ingresosResponse.error);
+        return {
+          success: false,
+          error: {
+            context: {
+              message: "Error al obtener ingresos del backend"
+            }
+          }
+        };
+      }
+
+      // Extraer pacientes únicos de los ingresos
+      const pacientesMap = new Map();
+      
+      console.log('🔍 Estructura de respuesta del backend:', JSON.stringify(ingresosResponse.result, null, 2));
+      
+      // El backend devuelve { fechaDeConsulta, listaDeIngresos }
+      if (ingresosResponse.result && ingresosResponse.result.listaDeIngresos) {
+        console.log('📝 Procesando lista de ingresos, cantidad:', ingresosResponse.result.listaDeIngresos.length);
+        
+        ingresosResponse.result.listaDeIngresos.forEach((ingreso, index) => {
+          console.log(`🏥 Procesando ingreso ${index + 1}:`, ingreso);
+          
+          if (ingreso.paciente && ingreso.paciente.cuit) {
+            const cuit = ingreso.paciente.cuit;
+            if (!pacientesMap.has(cuit)) {
+              // Mapear la estructura del backend al frontend
+              const paciente = {
+                cuit: ingreso.paciente.cuit,
+                nombre: ingreso.paciente.nombre,
+                apellido: ingreso.paciente.apellido,
+                domicilio: ingreso.paciente.domicilio,
+                fechaRegistro: ingreso.fechaIngreso || new Date().toISOString()
+              };
+              
+              // Si tiene afiliación, agregarla
+              if (ingreso.paciente.afiliacion) {
+                paciente.afiliado = {
+                  obraSocial: {
+                    nombre: ingreso.paciente.afiliacion.obraSocial.nombre
+                  },
+                  numeroAfiliado: ingreso.paciente.afiliacion.numeroAfiliado
+                };
+              }
+              
+              console.log('👤 Paciente extraído:', paciente);
+              pacientesMap.set(cuit, paciente);
+            }
+          } else {
+            console.log('⚠️ Ingreso sin paciente válido:', ingreso);
+          }
+        });
+      } else {
+        console.log('⚠️ No se encontró listaDeIngresos en la respuesta');
+      }
+      
+      const pacientes = Array.from(pacientesMap.values());
+      console.log('✅ Pacientes finales extraídos:', pacientes);
       
       return {
         success: true,
-        result: pacientesStorage
+        result: pacientes
       };
     } catch (error) {
+      console.log('❌ Error en getPacientes:', error);
       return {
         success: false,
         error: {
           context: {
-            message: "Error al obtener los pacientes"
+            message: "Error al obtener los pacientes del backend"
           }
         }
       };
@@ -74,27 +108,23 @@ export const pacientesService = {
 
   /** @type {import("../../models/service.schema").ServiceFunction<string, any>} */
   getPacienteByCuit: async (cuit) => {
+    // NOTA: El backend no tiene endpoint específico para buscar pacientes por CUIT.
+    // El backend maneja esto automáticamente en el endpoint de ingresos.
+    // Siempre retornamos "no encontrado" para que se muestre el formulario.
+    
     try {
       // Simular delay de red
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      const paciente = pacientesStorage.find(p => p.cuit === cuit);
-      
-      if (paciente) {
-        return {
-          success: true,
-          result: paciente
-        };
-      } else {
-        return {
-          success: false,
-          error: {
-            context: {
-              message: "Paciente no encontrado"
-            }
+      // Siempre retornar "no encontrado" para que aparezca el formulario de registro
+      return {
+        success: false,
+        error: {
+          context: {
+            message: "El backend maneja la búsqueda/creación de pacientes automáticamente en el registro de ingresos"
           }
-        };
-      }
+        }
+      };
     } catch (error) {
       return {
         success: false,
