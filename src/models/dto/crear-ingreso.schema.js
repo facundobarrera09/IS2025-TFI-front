@@ -5,12 +5,18 @@ const error = "Se debe ingresar un valor"
 export const CrearIngreso = z.object({
     paciente: z.object({
         cuit: z.string().regex(/^\d\d-\d{8}-\d$/, "CUIT debe tener formato XX-12345678-X"),
-        apellido: z.string().min(1, error).optional(),
-        nombre: z.string().min(1, error).optional(),
+        apellido: z.string().min(1, "El apellido es obligatorio").optional(),
+        nombre: z.string().min(1, "El nombre es obligatorio").optional(),
         domicilio: z.object({
-            calle: z.string(error).min(1, error),
-            numero: z.union([z.string().min(1, error), z.number().positive(error)]),
-            localidad: z.string(error).min(1, error)
+            calle: z.string().min(1, "La calle es obligatoria"),
+            numero: z.union([z.string().min(1, "El número es obligatorio"), z.number().positive("El número debe ser positivo")]),
+            localidad: z.string().min(1, "La localidad es obligatoria")
+        }).optional(),
+        afiliado: z.object({
+            obraSocial: z.object({
+                nombre: z.string().min(1, "El nombre de la obra social es obligatorio")
+            }),
+            numeroAfiliado: z.string().min(1, "El número de afiliado es obligatorio")
         }).optional()
     }),
     enfermera: z.object({

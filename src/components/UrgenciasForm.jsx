@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CrearIngreso } from "../models/dto/crear-ingreso.schema";
 import { pacientesService } from "../backend/connections/pacientesService";
 import { useAuth } from "../context/AuthContext";
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
+import PacientesForm from "./PacientesForm";
 
 export default function UrgenciasForm({ onSubmit }) {
   const { usuario } = useAuth();
@@ -22,7 +23,12 @@ export default function UrgenciasForm({ onSubmit }) {
       cuit: "",
       apellido: undefined,
       nombre: undefined,
-      domicilio: undefined
+      domicilio: {
+        calle: "",
+        numero: "",
+        localidad: ""
+      },
+      afiliado: undefined
     },
     enfermera: {
       uuid: getEnfermeraUuid()
@@ -88,7 +94,12 @@ export default function UrgenciasForm({ onSubmit }) {
         cuit,
         apellido: undefined,
         nombre: undefined,
-        domicilio: undefined
+        domicilio: {
+          calle: "",
+          numero: "",
+          localidad: ""
+        },
+        afiliado: undefined
       }
     }));
   };
@@ -269,61 +280,20 @@ export default function UrgenciasForm({ onSubmit }) {
                       )}
 
                       {!pacienteEncontrado && form.paciente.cuit && !buscandoPaciente && form.paciente.cuit.replace(/-/g, '').length >= 11 && (
-                        <>
-                          <Alert style={{ background: '#4a5568', border: '1px solid #718096', color: '#e2e8f0' }} className="mb-3">
-                            <div className="d-flex align-items-center">
-                              <div>
-                                <strong>Búsqueda de pacientes no disponible</strong>
-                                <div className="small">El backend no tiene implementado el módulo de pacientes. Complete los datos manualmente.</div>
-                              </div>
-                            </div>
-                          </Alert>
-                          
-                          <div className="row">
-                            <div className="col-md-6">
-                              <Form.Group className="mb-3">
-                                <Form.Label style={{ color: '#cbd5e0' }}>
-                                  Nombre del Paciente <span style={{ color: '#ef4444' }}>*</span>
-                                </Form.Label>
-                                <Form.Control
-                                  type="text"
-                                  placeholder="Nombre"
-                                  value={form.paciente.nombre || ''}
-                                  onChange={(e) => {
-                                    setForm(prev => ({
-                                      ...prev,
-                                      paciente: {
-                                        ...prev.paciente,
-                                        nombre: e.target.value
-                                      }
-                                    }));
-                                  }}
-                                />
-                              </Form.Group>
-                            </div>
-                            <div className="col-md-6">
-                              <Form.Group className="mb-3">
-                                <Form.Label style={{ color: '#cbd5e0' }}>
-                                  Apellido del Paciente <span style={{ color: '#ef4444' }}>*</span>
-                                </Form.Label>
-                                <Form.Control
-                                  type="text"
-                                  placeholder="Apellido"
-                                  value={form.paciente.apellido || ''}
-                                  onChange={(e) => {
-                                    setForm(prev => ({
-                                      ...prev,
-                                      paciente: {
-                                        ...prev.paciente,
-                                        apellido: e.target.value
-                                      }
-                                    }));
-                                  }}
-                                />
-                              </Form.Group>
-                            </div>
-                          </div>
-                        </>
+                        <PacienteRegistroFormWrapper 
+                          cuit={form.paciente.cuit}
+                          onPacienteCreado={(pacienteData) => {
+                            // Actualizar el formulario con los datos del paciente creado
+                            setForm(prev => ({
+                              ...prev,
+                              paciente: {
+                                ...prev.paciente,
+                                ...pacienteData
+                              }
+                            }));
+                            setPacienteEncontrado(pacienteData);
+                          }}
+                        />
                       )}
                     </Card.Body>
                   </Card>
@@ -521,3 +491,91 @@ export default function UrgenciasForm({ onSubmit }) {
     </Container>
   );
 }
+
+// Componente wrapper para usar PacientesForm en el contexto de urgencias
+function PacienteRegistroFormWrapper({ cuit, onPacienteCreado }) {
+  const [showForm, setShowForm] = useState(false);
+
+  const handlePacienteSubmit = async (pacienteData) => {
+    // Agregar el CUIT al paciente
+    const pacienteConCuit = {
+      ...pacienteData,
+      cuit: cuit
+    };
+
+    // Registrar el paciente
+    const response = await pacientesService.crearPaciente(pacienteConCuit);
+    
+    if (response.success) {
+      // Notificar al componente padre que el paciente fue creado
+      onPacienteCreado(pacienteConCuit);
+      setShowForm(false);
+      return true;
+    } else {
+      console.error("Error al crear paciente:", response.error);
+      return false;
+    }
+  };
+
+  if (!showForm) {
+    return (
+      <Alert style={{ background: '#4a5568', border: '1px solid #718096', color: '#e2e8f0' }} className="mb-3">
+        <div className="d-flex align-items-center justify-content-between">
+          <div>
+            <strong>Paciente no encontrado</strong>
+            <div className="small">El paciente con CUIT {cuit} no está registrado.</div>
+          </div>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setShowForm(true)}
+            style={{
+              background: '#3182ce',
+              border: 'none',
+              padding: '8px 16px'
+            }}
+          >
+            Registrar Paciente
+          </Button>
+        </div>
+      </Alert>
+    );
+  }
+
+  return (
+    <div style={{ 
+      background: 'rgba(255, 255, 255, 0.02)', 
+      border: '1px solid rgba(255, 255, 255, 0.1)', 
+      borderRadius: '12px', 
+      padding: '20px',
+      marginBottom: '20px'
+    }}>
+      <div className="d-flex align-items-center justify-content-between mb-3">
+        <h6 style={{ color: '#90cdf4', margin: 0 }}>Registrar Nuevo Paciente</h6>
+        <Button
+          variant="outline-secondary"
+          size="sm"
+          onClick={() => setShowForm(false)}
+          style={{
+            color: '#cbd5e0',
+            borderColor: '#4a5568'
+          }}
+        >
+          Cancelar
+        </Button>
+      </div>
+      
+      <Alert variant="info" style={{ background: '#2b6cb0', border: '1px solid #3182ce', color: '#ffffff' }}>
+        <small>
+          <strong>CUIT:</strong> {cuit} - Complete los datos del paciente para registrarlo automáticamente.
+        </small>
+      </Alert>
+      
+      <PacientesForm 
+        onSubmit={handlePacienteSubmit}
+        cuitPredefinido={cuit}
+      />
+    </div>
+  );
+}
+

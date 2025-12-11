@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { CrearPacienteSchema } from "../models/dto/crear-paciente.schema";
 import { obrasSocialesService } from "../backend/connections/obrasSocialesService";
 
-export default function PacientesForm({ onSubmit }) {
+export default function PacientesForm({ onSubmit, cuitPredefinido }) {
   const initialForm = {
-    cuit: "",
+    cuit: cuitPredefinido || "",
     apellido: "",
     nombre: "",
     domicilio: {
@@ -16,6 +16,16 @@ export default function PacientesForm({ onSubmit }) {
   };
 
   const [form, setForm] = useState(initialForm);
+
+  // Actualizar el CUIT cuando cambie el prop
+  useEffect(() => {
+    if (cuitPredefinido) {
+      setForm(prev => ({
+        ...prev,
+        cuit: cuitPredefinido
+      }));
+    }
+  }, [cuitPredefinido]);
   const [errors, setErrors] = useState({});
   const [tieneObraSocial, setTieneObraSocial] = useState(false);
   const [obrasSociales, setObrasSociales] = useState([]);
@@ -184,6 +194,12 @@ export default function PacientesForm({ onSubmit }) {
           onChange={handleChange}
           className={errors['cuit'] ? 'input-error' : ''}
           maxLength={13}
+          readOnly={!!cuitPredefinido}
+          style={cuitPredefinido ? { 
+            backgroundColor: '#4a5568', 
+            color: '#cbd5e0',
+            cursor: 'not-allowed'
+          } : {}}
         />
         {errors['cuit'] && <div className="field-error">{errors['cuit']}</div>}
 
